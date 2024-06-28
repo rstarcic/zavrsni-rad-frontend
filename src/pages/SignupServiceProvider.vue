@@ -7,7 +7,7 @@
       <q-card-section>
         <div class="text-h6 title text-purple-1">SIGN UP</div>
         <div class="text-subtitle2 subtitle text-purple-1">
-          Dear job seeker, please sign up
+          Dear user, please sign up as a Service provider
         </div>
       </q-card-section>
       <div class="q-pa-md example-row-equal-width">
@@ -103,7 +103,6 @@
               popup-content-style="background-color: #642b73; color: white; width:200px;"
               dark
               use-input
-              fill-input
               input-debounce="0"
               @filter="filterCountries"
             >
@@ -236,13 +235,12 @@
         class="login-btn"
         color="#f2f2f2"
         label="Login"
-        @click="login"
+        @click="signUp"
         size="12px"
       />
     </q-card>
   </div>
 </template>
-
 
 <script>
 import axios from "axios";
@@ -341,6 +339,36 @@ export default {
           (country) => country.toLowerCase().indexOf(needle) > -1
         );
       });
+    },
+    signUp() {
+      const userData = {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        gender: this.gender,
+        dateOfBirth: this.dateOfBirth,
+        documentType: this.documentType,
+        documentNumber: this.documentNumber,
+        email: this.email,
+        password: this.password,
+        phoneNumber: this.phoneNumber,
+        country: this.country,
+        city: this.city,
+        address: this.address,
+        postalCode: this.postalCode,
+      };
+      axios
+        .post(
+          `http://localhost:3001/api/auth/signup/service-provider`,
+          userData
+        )
+        .then((response) => {
+          localStorage.setItem("token", response.data.token);
+          const user = response.data.user;
+          sessionStorage.setItem("user", JSON.stringify(user));
+        })
+        .catch((error) => {
+          console.error("There was an error!", error);
+        });
     },
   },
 };

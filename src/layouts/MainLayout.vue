@@ -28,20 +28,20 @@
             <q-item
               clickable
               v-close-popup
-              @click="onItemClick('/signup/employer')"
+              @click="onItemClick('/signup/client')"
             >
               <q-item-section>
-                <q-item-label>Employer</q-item-label>
+                <q-item-label>Client</q-item-label>
               </q-item-section>
             </q-item>
 
             <q-item
               clickable
               v-close-popup
-              @click="onItemClick('/signup/job-seeker')"
+              @click="onItemClick('/signup/service-provider')"
             >
               <q-item-section>
-                <q-item-label>Job seeker</q-item-label>
+                <q-item-label>Service provider</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -53,16 +53,6 @@
     <q-page-container>
       <router-view />
     </q-page-container>
-
-    <q-footer elevated class="bg-grey-8 text-white">
-      <q-toolbar>
-        <img
-          src="/assets/blackJobifyLogo.png"
-          alt="Jobify Logo"
-          style="max-width: 150px"
-        />
-      </q-toolbar>
-    </q-footer>
   </q-layout>
 </template>
 

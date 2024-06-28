@@ -36,7 +36,7 @@
           no-caps
           color="#FFFFFF"
           class="signup-button"
-          @click="this.$router.push('/signup/job-seeker')"
+          @click="this.$router.push('/signup/service-provider')"
           >Join Jobify</q-btn
         >
       </div>
@@ -165,7 +165,6 @@ export default {
   methods: {},
 };
 </script>
-
 
 <style scoped>
 .parallax-text h3 {

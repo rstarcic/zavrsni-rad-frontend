@@ -17,7 +17,6 @@
   </q-card>
 </template>
 
-
 <script setup>
 import axios from "axios";
 const props = defineProps({
@@ -36,7 +35,6 @@ defineOptions({
   methods: {},
 });
 </script>
-
 
 <style scoped>
 .job-card {

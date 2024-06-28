@@ -12,12 +12,46 @@ const routes = [
     component: () => import("layouts/MainLayout.vue"),
     children: [
       {
-        path: "employer",
-        component: () => import("pages/SignupEmployer.vue"),
+        path: "client",
+        component: () => import("src/pages/SelectClientType.vue"),
       },
       {
-        path: "job-seeker",
-        component: () => import("pages/SignupJobSeeker.vue"),
+        path: "client/individual",
+        component: () => import("src/pages/SignupClient.vue"),
+        props: { clientType: "individual" },
+      },
+      {
+        path: "client/business",
+        component: () => import("src/pages/SignupClient.vue"),
+        props: { clientType: "business" },
+      },
+      {
+        path: "service-provider",
+        component: () => import("pages/SignupServiceProvider.vue"),
+      },
+    ],
+  },
+  {
+    path: "/client",
+    component: () => import("layouts/ClientLayout.vue"),
+    children: [
+      {
+        path: "individual/profile",
+        component: () => import("src/pages/ClientProfile.vue"),
+      },
+      {
+        path: "business/profile",
+        component: () => import("src/pages/ClientProfile.vue"),
+      },
+    ],
+  },
+  {
+    path: "/service-provider",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "profile",
+        component: () => import("src/pages/ServiceProviderProfile.vue"),
       },
     ],
   },

@@ -38,14 +38,13 @@
       <q-btn
         class="login-btn"
         color="#f2f2f2"
-        label="Login"
+        label="Sign Up"
         @click="login"
         size="12px"
       />
     </q-card>
   </div>
 </template>
-
 
 <script>
 import axios from "axios";
@@ -62,19 +61,39 @@ export default {
   methods: {
     login() {
       axios
-        .post("/api/login", {
-          username: this.username,
+        .post("http://localhost:3001/api/auth/login", {
+          email: this.email,
           password: this.password,
         })
         .then((response) => {
-          // Obrada odgovora na uspješan login
+          localStorage.setItem("token", response.data.token);
+          sessionStorage.setItem("user", JSON.stringify(response.data.user));
+          const user = response.data.user;
+          console.log(user);
+          if (user.dataValues.role === "service provider") {
+            this.$router.push("/service-provider/profile");
+          } else if (user.dataValues.role === "client") {
+            if (user.dataValues.type === "individual")
+              this.$router.push("/client/individual/profile");
+            else if (user.dataValues.type === "business") {
+              this.$router.push("/client/business/profile");
+            } else {
+              console.error("Unknown client type:", user.dataValues.type);
+            }
+          } else {
+            console.error("Unknown role:", userRole);
+          }
         })
         .catch((error) => {
-          // Obrada greške na neuspješan login
+          if (error.response && error.response.status === 401) {
+            this.errorMessage = "Incorrect email or password.";
+          } else {
+            console.error("There was an error!", error);
+            this.errorMessage = "An error occurred. Please try again later.";
+          }
         });
     },
     togglePasswordVisibility() {
-      // Metoda za promjenu stanja prikaza lozinke
       this.IsPasswordShowed = !this.IsPasswordShowed;
     },
   },
