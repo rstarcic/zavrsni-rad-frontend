@@ -47,11 +47,16 @@ const routes = [
   },
   {
     path: "/service-provider",
-    component: () => import("layouts/MainLayout.vue"),
+    component: () => import("layouts/ServiceProviderLayout.vue"),
     children: [
+      {
+        path: "search-jobs",
+        component: () => import("src/pages/SearchJobs.vue"),
+      },
       {
         path: "profile",
         component: () => import("src/pages/ServiceProviderProfile.vue"),
+        name: "service-provider-profile",
       },
     ],
   },

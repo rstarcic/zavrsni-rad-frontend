@@ -45,6 +45,18 @@ export default {
           const user = response.data.user;
           sessionStorage.setItem("user", JSON.stringify(user));
           console.log("Use auth signup client role:", user);
+
+          if (user.role === "client") {
+            if (user.type === "individual")
+              this.$router.push("/client/individual/search-jobs");
+            else if (user.type === "business") {
+              this.$router.push("/client/business/search-jobs");
+            } else {
+              console.error("Unknown client type:", user.dataValues.type);
+            }
+          } else {
+            console.error("Unknown role:", userRole);
+          }
         })
         .catch((error) => {
           console.error("There was an error!", error);

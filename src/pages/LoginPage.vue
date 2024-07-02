@@ -71,12 +71,12 @@ export default {
           const user = response.data.user;
           console.log(user);
           if (user.dataValues.role === "service provider") {
-            this.$router.push("/service-provider/profile");
+            this.$router.push("/service-provider/search-jobs");
           } else if (user.dataValues.role === "client") {
             if (user.dataValues.type === "individual")
-              this.$router.push("/client/individual/profile");
+              this.$router.push("/client/individual/search-jobs");
             else if (user.dataValues.type === "business") {
-              this.$router.push("/client/business/profile");
+              this.$router.push("/client/business/search-jobs");
             } else {
               console.error("Unknown client type:", user.dataValues.type);
             }

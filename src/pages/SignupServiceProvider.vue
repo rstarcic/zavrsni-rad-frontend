@@ -365,6 +365,13 @@ export default {
           localStorage.setItem("token", response.data.token);
           const user = response.data.user;
           sessionStorage.setItem("user", JSON.stringify(user));
+          console.log("Use auth signup service provider role:", user);
+
+          if (user.role === "service provider") {
+            this.$router.push("/service-provider/search-jobs");
+          } else {
+            console.error("Unknown role:", user.role);
+          }
         })
         .catch((error) => {
           console.error("There was an error!", error);

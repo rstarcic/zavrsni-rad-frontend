@@ -369,7 +369,7 @@ export default {
   },
   methods: {
     togglePasswordVisibility() {
-      this.isPasswordShowed = !this.isPasswordShowed;
+      this.IsPasswordShowed = !this.IsPasswordShowed;
     },
     filterCountries(val, update) {
       update(() => {
