@@ -261,8 +261,8 @@ export default {
         });
     },
     loadUserData() {
-      let user = JSON.parse(sessionStorage.getItem("user"));
-      user = user.dataValues;
+      let userData = JSON.parse(sessionStorage.getItem("user"));
+      const user = userData.dataValues || userData;
       if (user) {
         this.firstName = user.firstName;
         this.lastName = user.lastName;

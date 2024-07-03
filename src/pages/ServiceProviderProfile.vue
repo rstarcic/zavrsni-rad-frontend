@@ -6,10 +6,16 @@
       ></update-profile-component>
     </q-card>
     <q-card class="info-card q-pa-md">
-      <education-component @updateEducationData="handleUpdateEducation" />
+      <education-component
+        :educationList="educationList"
+        @updateEducationData="handleUpdateEducation"
+      />
     </q-card>
     <q-card class="info-card q-pa-md">
-      <work-experience-component />
+      <work-experience-component
+        :workExperienceList="workExperienceList"
+        @updateWorkExperienceData="handleUpdateWorkExperience"
+      />
     </q-card>
     <q-card class="about-me-card q-pa-md">
       <div class="text-h6">About Me</div>
@@ -25,7 +31,10 @@
       </div>
     </q-card>
     <q-card class="info-card q-pa-md">
-      <skills-component />
+      <skills-component
+        :skillsData="skills"
+        @updateSkillsData="handleUpdateSkills"
+      />
     </q-card>
   </div>
 </template>
@@ -39,7 +48,13 @@ import SkillsComponent from "src/components/SkillsComponent.vue";
 export default {
   name: "ServiceProviderProfile",
   data() {
-    return {};
+    return {
+      educationList: [
+        { institution: "", degree: "", startYear: "", endYear: "" },
+      ],
+      aboutMeText: "",
+      skills: [],
+    };
   },
   components: {
     UpdateProfileComponent,
@@ -88,6 +103,121 @@ export default {
         console.error("Error updating education:", error);
       }
     },
+    async handleUpdateWorkExperience(workExperienceList) {
+      const userSessionData = JSON.parse(sessionStorage.getItem("user"));
+      const userId = userSessionData.dataValues.id;
+      try {
+        const response = await axios.post(
+          `http://localhost:3001/api/service-provider/profile/work-experience`,
+          { workExperienceList, userId }
+        );
+        sessionStorage.setItem(
+          "work-experience",
+          JSON.stringify(response.data.workExperienceCreated)
+        );
+        console.log("Work experience updated successfully.");
+      } catch (error) {
+        console.error("Error updating work experience:", error);
+      }
+    },
+    async handleUpdateSkills(newSkills) {
+      try {
+        const userSessionData = JSON.parse(sessionStorage.getItem("user"));
+        const userId = userSessionData.dataValues.id;
+        const response = await axios.patch(
+          `http://localhost:3001/api/service-provider/profile/skills`,
+          { skills: newSkills, userId }
+        );
+
+        if (response.status === 200) {
+          console.log("Skills updated successfully:", response.data.skills);
+          this.skills = response.data.skills;
+        } else {
+          console.error("Error response from server:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error updating skills:", error);
+      }
+    },
+    async saveAboutMe() {
+      try {
+        const userSessionData = JSON.parse(sessionStorage.getItem("user"));
+        const userId = userSessionData.dataValues.id;
+        const response = await axios.patch(
+          `http://localhost:3001/api/service-provider/profile/about-me`,
+          { aboutMe: this.aboutMeText, userId }
+        );
+        if (response.status === 200) {
+          userSessionData.aboutMeSummary = response.data.aboutMe;
+          sessionStorage.setItem("user", JSON.stringify(userSessionData));
+          console.log("About me text saved successfully");
+        } else {
+          console.error("Error response from server:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error saving About Me text:", error);
+      }
+    },
+    async loadEducationData() {
+      const userSessionData = JSON.parse(sessionStorage.getItem("user"));
+      if (!userSessionData) {
+        console.error("User session data not found");
+        return;
+      }
+      const userId = userSessionData.dataValues.id;
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/api/service-provider/profile/education/${userId}`
+        );
+        if (response.data && response.data.educationFetched) {
+          this.educationList = response.data.educationFetched;
+        } else {
+          this.educationList = [
+            { id: 1, degree: "", institution: "", startYear: "", endYear: "" },
+          ];
+        }
+        sessionStorage.setItem("education", JSON.stringify(this.educationList));
+      } catch (error) {
+        console.error("Error loading education data:", error);
+      }
+    },
+    async loadAboutMeText() {
+      try {
+        const userSessionData = JSON.parse(sessionStorage.getItem("user"));
+        if (!userSessionData) {
+          throw new Error("User session data not found");
+        }
+        if (userSessionData.dataValues.aboutMeSummary) {
+          this.aboutMeText = userSessionData.dataValues.aboutMeSummary;
+        } else {
+          const userId = userSessionData.dataValues.id;
+          const response = await axios.get(
+            `http://localhost:3001/api/service-provider/profile/about-me/${userId}`
+          );
+          this.aboutMeText = response.data.aboutMe || "";
+          userSessionData.dataValues.aboutMeSummary = this.aboutMeText;
+          sessionStorage.setItem("user", JSON.stringify(userSessionData));
+        }
+      } catch (error) {
+        console.error("Error loading About Me text:", error);
+      }
+    },
+    loadSkillsData() {
+      const userSessionData = JSON.parse(sessionStorage.getItem("user"));
+      console.log("loadSkillsData usersesdsion:", userSessionData);
+      if (userSessionData.dataValues.skills) {
+        this.skills = JSON.parse(userSessionData.dataValues.skills);
+        console.log("loadSkillsData skills:", this.skills);
+      } else {
+        console.error("No skills data in session storage.");
+        this.skills = [];
+      }
+    },
+  },
+  mounted() {
+    this.loadEducationData();
+    this.loadAboutMeText();
+    this.loadSkillsData();
   },
 };
 </script>

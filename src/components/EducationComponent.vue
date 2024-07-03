@@ -2,7 +2,7 @@
   <div class="education">
     <div class="text-h6">Education</div>
     <q-list class="full-width">
-      <q-item v-for="(education, index) in educationList" :key="education.id">
+      <q-item v-for="(education, index) in educationData" :key="education.id">
         <q-item-section>
           <q-input v-model="education.institution" label="Institution" dense />
           <q-input v-model="education.degree" label="Degree" dense />
@@ -34,19 +34,36 @@
 <script>
 export default {
   name: "EducationCard",
+  props: {
+    educationList: {
+      type: Array,
+      default: () => [
+        { institution: "", degree: "", startYear: "", endYear: "" },
+      ],
+    },
+  },
   data() {
     return {
-      educationList: [],
+      educationData: JSON.parse(JSON.stringify(this.educationList)),
     };
+  },
+  watch: {
+    educationList: {
+      handler(newList) {
+        this.educationData = JSON.parse(JSON.stringify(newList));
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   methods: {
     saveEducation() {
-      this.$emit("updateEducationData", this.educationList);
+      this.$emit("updateEducationData", this.educationData);
     },
     addEducation() {
-      if (this.educationList.length < 2) {
-        this.educationList.push({
-          id: this.educationList.length + 1,
+      if (this.educationData.length < 2) {
+        this.educationData.push({
+          id: this.educationData.length + 1,
           degree: "",
           institution: "",
           startYear: "",
@@ -57,17 +74,17 @@ export default {
       }
     },
     removeEducation(index) {
-      this.educationList.splice(index, 1);
+      this.educationData.splice(index, 1);
       this.saveEducation();
     },
     loadEducationData() {
-      let educationData = JSON.parse(sessionStorage.getItem("education"));
-      if (educationData) {
-        this.educationList = educationData;
+      let education = JSON.parse(sessionStorage.getItem("education"));
+      if (education && education.length) {
+        this.educationData = education;
       }
     },
   },
-  mounted() {
+  created() {
     this.loadEducationData();
   },
 };
