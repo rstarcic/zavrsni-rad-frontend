@@ -13,8 +13,22 @@
             dense
           />
           <q-input v-model="experience.jobTitle" label="Job title" dense />
-          <q-input v-model="experience.startDate" label="Start date" dense />
-          <q-input v-model="experience.endDate" label="End date" dense />
+          <q-input
+            v-model="experience.startDate"
+            label="Start date"
+            dense
+            type="date"
+            stack-label
+            years-in-month-view
+          />
+          <q-input
+            v-model="experience.endDate"
+            label="End date"
+            dense
+            type="date"
+            stack-label
+            years-in-month-view
+          />
           <div class="remove-button q-mt-md q-gutter-sm">
             <q-btn
               color="negative"
@@ -69,7 +83,6 @@ export default {
     addWorkExperience() {
       if (this.workExperienceData.length < 3) {
         this.workExperienceData.push({
-          id: this.workExperienceData.length + 1,
           companyName: "",
           jobTitle: "",
           startDate: "",
@@ -83,17 +96,6 @@ export default {
       this.workExperienceData.splice(index, 1);
       this.saveWorkExperience();
     },
-    loadWorkExperienceData() {
-      let workExperience = JSON.parse(
-        sessionStorage.getItem("work-experience")
-      );
-      if (workExperience && workExperience.length) {
-        this.workExperienceData = workExperience;
-      }
-    },
-  },
-  created() {
-    this.loadWorkExperienceData();
   },
 };
 </script>

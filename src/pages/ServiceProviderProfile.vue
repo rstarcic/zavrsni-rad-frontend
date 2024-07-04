@@ -49,11 +49,10 @@ export default {
   name: "ServiceProviderProfile",
   data() {
     return {
-      educationList: [
-        { institution: "", degree: "", startYear: "", endYear: "" },
-      ],
+      educationList: [],
       aboutMeText: "",
       skills: [],
+      workExperienceList: [],
     };
   },
   components: {
@@ -188,29 +187,72 @@ export default {
           throw new Error("User session data not found");
         }
         if (userSessionData.dataValues.aboutMeSummary) {
+          console.log("about me iz sesije");
           this.aboutMeText = userSessionData.dataValues.aboutMeSummary;
         } else {
           const userId = userSessionData.dataValues.id;
           const response = await axios.get(
             `http://localhost:3001/api/service-provider/profile/about-me/${userId}`
           );
-          this.aboutMeText = response.data.aboutMe || "";
-          userSessionData.dataValues.aboutMeSummary = this.aboutMeText;
-          sessionStorage.setItem("user", JSON.stringify(userSessionData));
+          if (response.data && response.data.aboutMeTextFetched) {
+            console.log("about me iz baze");
+            this.aboutMeText = response.data.aboutMeTextFetched;
+            userSessionData.dataValues.aboutMeSummary = this.aboutMeText;
+            sessionStorage.setItem("user", JSON.stringify(userSessionData));
+          }
         }
       } catch (error) {
         console.error("Error loading About Me text:", error);
       }
     },
-    loadSkillsData() {
+    async loadSkillsData() {
       const userSessionData = JSON.parse(sessionStorage.getItem("user"));
-      console.log("loadSkillsData usersesdsion:", userSessionData);
       if (userSessionData.dataValues.skills) {
-        this.skills = JSON.parse(userSessionData.dataValues.skills);
-        console.log("loadSkillsData skills:", this.skills);
+        this.skills = userSessionData.dataValues.skills;
+        console.log("skills iz sesije", this.skills);
       } else {
-        console.error("No skills data in session storage.");
-        this.skills = [];
+        const userId = userSessionData.dataValues.id;
+        const response = await axios.get(
+          `http://localhost:3001/api/service-provider/profile/skills/${userId}`
+        );
+        if (response.data && response.data.skillsFetched) {
+          console.log("skills iz baze", response.data.skillsFetched);
+          this.skills = response.data.skillsFetched;
+          userSessionData.dataValues.skills = this.skills;
+          sessionStorage.setItem("user", JSON.stringify(userSessionData));
+        }
+      }
+    },
+    async loadWorkExperience() {
+      const userSessionData = JSON.parse(sessionStorage.getItem("user"));
+      if (!userSessionData) {
+        console.error("User session data not found");
+        return;
+      }
+      const userId = userSessionData.dataValues.id;
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/api/service-provider/profile/work-experience/${userId}`
+        );
+        if (response.data && response.data.workExperienceFetched) {
+          this.workExperienceList = response.data.workExperienceFetched;
+        } else {
+          this.workExperienceList = [
+            {
+              id: 1,
+              companyName: "",
+              jobTitle: "",
+              startDate: "",
+              endDate: "",
+            },
+          ];
+        }
+        sessionStorage.setItem(
+          "work-experience",
+          JSON.stringify(this.workExperienceList)
+        );
+      } catch (error) {
+        console.error("Error loading work experience data:", error);
       }
     },
   },
@@ -218,6 +260,7 @@ export default {
     this.loadEducationData();
     this.loadAboutMeText();
     this.loadSkillsData();
+    this.loadWorkExperience();
   },
 };
 </script>

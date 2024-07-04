@@ -6,8 +6,22 @@
         <q-item-section>
           <q-input v-model="education.institution" label="Institution" dense />
           <q-input v-model="education.degree" label="Degree" dense />
-          <q-input v-model="education.startYear" label="Start year" dense />
-          <q-input v-model="education.endYear" label="End year" dense />
+          <q-input
+            v-model="education.startDate"
+            label="Start date"
+            dense
+            type="date"
+            stack-label
+            years-in-month-view
+          />
+          <q-input
+            v-model="education.endDate"
+            label="End date"
+            dense
+            type="date"
+            stack-label
+            years-in-month-view
+          />
           <div class="remove-button q-mt-md q-gutter-sm">
             <q-btn
               color="negative"
@@ -38,7 +52,7 @@ export default {
     educationList: {
       type: Array,
       default: () => [
-        { institution: "", degree: "", startYear: "", endYear: "" },
+        { institution: "", degree: "", startDate: "", endDate: "" },
       ],
     },
   },
@@ -63,11 +77,10 @@ export default {
     addEducation() {
       if (this.educationData.length < 2) {
         this.educationData.push({
-          id: this.educationData.length + 1,
           degree: "",
           institution: "",
-          startYear: "",
-          endYear: "",
+          startDate: "",
+          endDate: "",
         });
       } else {
         console.warn("Maximum of 2 education entries can be added");
@@ -77,15 +90,6 @@ export default {
       this.educationData.splice(index, 1);
       this.saveEducation();
     },
-    loadEducationData() {
-      let education = JSON.parse(sessionStorage.getItem("education"));
-      if (education && education.length) {
-        this.educationData = education;
-      }
-    },
-  },
-  created() {
-    this.loadEducationData();
   },
 };
 </script>

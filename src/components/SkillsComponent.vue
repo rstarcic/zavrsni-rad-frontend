@@ -31,7 +31,7 @@ export default {
   },
   data() {
     return {
-      skills: [],
+      skills: JSON.parse(JSON.stringify(this.skillsData)),
     };
   },
   watch: {
