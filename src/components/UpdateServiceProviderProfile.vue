@@ -186,7 +186,7 @@ import axios from "axios";
 import { countries } from "../assets/location";
 
 export default {
-  name: "UpdateProfileComponent",
+  name: "UpdateServiceProviderProfile",
   data() {
     return {
       file: null,

@@ -33,6 +33,7 @@
       >
         <q-list padding>
           <q-item
+            :to="`/client/${clientType}/search-jobs`"
             :class="{ active: activeItem === 'searchJobs' }"
             clickable
             v-ripple
@@ -46,6 +47,7 @@
           </q-item>
 
           <q-item
+            :to="`/client/${clientType}/posted-jobs`"
             :class="{ active: activeItem === 'postedJobs' }"
             clickable
             v-ripple
@@ -59,6 +61,7 @@
           </q-item>
 
           <q-item
+            :to="`/client/${clientType}/post-jobs`"
             :class="{ active: activeItem === 'postNewJob' }"
             clickable
             v-ripple
@@ -72,6 +75,7 @@
           </q-item>
 
           <q-item
+            :to="`/client/${clientType}/generate-contract`"
             :class="{ active: activeItem === 'generatedContracts' }"
             clickable
             v-ripple
@@ -83,14 +87,41 @@
 
             <q-item-section> Generated contracts </q-item-section>
           </q-item>
+
+          <q-item
+            :to="`/client/${clientType}/profile`"
+            exact
+            :class="{ active: activeItem === 'profile' }"
+            clickable
+            v-ripple
+            @click="setActive('profile')"
+          >
+            <q-item-section avatar>
+              <q-icon name="fa-solid fa-user" />
+            </q-item-section>
+
+            <q-item-section> Profile </q-item-section>
+          </q-item>
+
+          <q-separator dark />
+
+          <q-item
+            :to="`/client/${clientType}/settings`"
+            :class="{ active: activeItem === 'settings' }"
+            clickable
+            v-ripple
+            @click="setActive('settings')"
+          >
+            <q-item-section avatar>
+              <q-icon name="settings" />
+            </q-item-section>
+
+            <q-item-section>Settings</q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
 
-      <q-img
-        to="/client/individual/profile"
-        class="absolute-top"
-        style="height: 150px"
-      >
+      <q-img class="absolute-top" style="height: 150px">
         <div class="absolute-bottom bg-transparent">
           <q-avatar size="56px" class="q-mb-sm">
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
@@ -108,12 +139,22 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 export default {
   name: "ClientLayout",
-  setup() {
+  props: {
+    type: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
     const leftDrawerOpen = ref(false);
     const activeItem = ref("");
+    const route = useRoute();
+    const user = computed(() => JSON.parse(sessionStorage.getItem("user")));
+    const clientType = computed(() => props.type);
 
     function toggleLeftDrawer() {
       leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -122,12 +163,25 @@ export default {
     function setActive(itemName) {
       activeItem.value = itemName;
     }
+    onMounted(() => {
+      const routeToItemMap = {
+        [`/client/${clientType.value}/search-jobs`]: "searchJobs",
+        [`/client/${clientType.value}/posted-jobs`]: "postedJobs",
+        [`/client/${clientType.value}/post-jobs`]: "postNewJob",
+        [`/client/${clientType.value}/generate-contract`]: "generatedContracts",
+        [`/client/${clientType.value}/profile`]: "profile",
+        [`/client/${clientType.value}/settings`]: "settings",
+      };
+      activeItem.value = routeToItemMap[route.path] || "";
+    });
 
     return {
       leftDrawerOpen,
       toggleLeftDrawer,
       setActive,
       activeItem,
+      user,
+      clientType,
     };
   },
   methods: {

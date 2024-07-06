@@ -1,9 +1,9 @@
 <template>
   <div class="alignment q-mt-xl">
     <q-card class="profile-card q-pa-md">
-      <update-profile-component
+      <update-service-provider-profile
         @updateProfileData="handleUserData"
-      ></update-profile-component>
+      ></update-service-provider-profile>
     </q-card>
     <q-card class="info-card q-pa-md">
       <education-component
@@ -41,7 +41,7 @@
 
 <script>
 import axios from "axios";
-import UpdateProfileComponent from "src/components/UpdateProfileComponent.vue";
+import UpdateServiceProviderProfile from "src/components/UpdateServiceProviderProfile.vue";
 import EducationComponent from "src/components/EducationComponent.vue";
 import WorkExperienceComponent from "src/components/WorkExperienceComponent.vue";
 import SkillsComponent from "src/components/SkillsComponent.vue";
@@ -56,7 +56,7 @@ export default {
     };
   },
   components: {
-    UpdateProfileComponent,
+    UpdateServiceProviderProfile,
     EducationComponent,
     WorkExperienceComponent,
     SkillsComponent,
