@@ -485,6 +485,7 @@ export default {
                     const user = response.data.user;
 
                     sessionStorage.setItem('user', JSON.stringify(user));
+                    sessionStorage.setItem('userId', user.id);
                     console.log('Use auth signup client role:', user);
 
                     if (user.role === 'client' && user.type === 'individual') {

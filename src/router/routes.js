@@ -30,7 +30,7 @@ const routes = [
         children: [
             {
                 path: 'profile',
-                component: () => import('src/pages/ClientProfile.vue'),
+                component: () => import('src/pages/client/client_profile_settings/ClientProfile.vue'),
                 props: true,
                 meta: { requiresRole: 'client' }
             },

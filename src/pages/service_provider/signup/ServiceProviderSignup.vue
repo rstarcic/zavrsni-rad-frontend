@@ -298,6 +298,7 @@ export default {
                     localStorage.setItem('token', response.data.token);
                     const user = response.data.user;
                     sessionStorage.setItem('user', JSON.stringify(user));
+                    sessionStorage.setItem('userId', user.id);
                     console.log('Use auth signup service provider role:', user);
 
                     if (user.role === 'service provider') {

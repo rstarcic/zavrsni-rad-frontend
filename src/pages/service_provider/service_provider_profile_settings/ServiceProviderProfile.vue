@@ -181,30 +181,41 @@ export default {
     },
     methods: {
         async saveProfile() {
-            const userSessionData = JSON.parse(sessionStorage.getItem('user'));
-            console.log('userSessionData', userSessionData);
-            const userId = userSessionData.dataValues.id;
-            if (userSessionData) {
+            const userId = JSON.parse(sessionStorage.getItem('userId'));
+            if (userId) {
                 const userDataToUpdate = { ...this.user, userId };
                 console.log('userDataToUpdate', userDataToUpdate);
                 await axios
                     .patch(`http://localhost:3001/api/service-provider/profile`, userDataToUpdate)
                     .then((response) => {
                         console.log('Server response:', response);
-                        sessionStorage.setItem('user', JSON.stringify(response.data.user));
+                        sessionStorage.setItem('user', JSON.stringify(response.data.userDataUpdated));
                     })
                     .catch((error) => {
                         console.error('There was an error!', error);
                     });
             } else {
-                console.error('User session data not found');
+                console.error('UserId not found in sessionStorage');
             }
         },
-        loadUserData() {
+        async loadUserData() {
             let userData = JSON.parse(sessionStorage.getItem('user'));
-            if (userData) {
-                const user = userData.dataValues || userData;
-                Object.assign(this.user, user);
+            let userId = JSON.parse(sessionStorage.getItem('userId'));
+            if (!userData && userId) {
+                await axios
+                    .get(`http://localhost:3001/api/service-provider/${userId}`)
+                    .then((response) => {
+                        userData = response.data.userDataFetched;
+                        sessionStorage.setItem('user', JSON.stringify({ ...userData }));
+                        Object.assign(this.user, userData);
+                        console.log('Api assigned', this.user);
+                    })
+                    .catch((error) => {
+                        console.error('There was an error fetching user data!', error);
+                    });
+            } else if (userData) {
+                Object.assign(this.user, userData);
+                console.log('Session storage assigned', this.user);
             }
         }
     },

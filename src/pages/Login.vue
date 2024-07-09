@@ -56,18 +56,16 @@ export default {
                     localStorage.setItem('token', response.data.token);
                     sessionStorage.setItem('user', JSON.stringify(response.data.user));
                     const user = response.data.user;
-                    console.log(user);
-                    if (user.dataValues.role === 'service provider') {
+                    sessionStorage.setItem('userId', user.id);
+                    console.log(user.id);
+                    if (user.role === 'service provider') {
                         this.$router.push('/service-provider/search-jobs');
-                    } else if (user.dataValues.role === 'client') {
-                        if (user.dataValues.type === 'individual') this.$router.push('/client/individual/search-jobs');
-                        else if (user.dataValues.type === 'business') {
-                            this.$router.push('/client/business/search-jobs');
-                        } else {
-                            console.error('Unknown client type:', user.dataValues.type);
-                        }
+                    } else if (user.role === 'client' && user.type === 'individual') {
+                        this.$router.push('/client/individual/search-jobs');
+                    } else if (user.role === 'client' && user.type === 'business') {
+                        this.$router.push('/client/business/search-jobs');
                     } else {
-                        console.error('Unknown role:', userRole);
+                        console.error('Unknown role:', user.role);
                     }
                 })
                 .catch((error) => {
