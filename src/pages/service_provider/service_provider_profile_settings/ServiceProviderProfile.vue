@@ -2,7 +2,14 @@
     <q-page class="q-pa-xl">
         <q-card class="profile-card">
             <div class="full-width column items-center">
-                <q-avatar size="150px" font-size="52px" color="teal" text-color="white" @click="triggerFileUpload">
+                <q-avatar
+                    class="q-ma-md"
+                    size="170px"
+                    font-size="52px"
+                    color="teal"
+                    text-color="white"
+                    @click="triggerFileUpload"
+                >
                     <template v-if="user.profileImage">
                         <img :src="user.profileImage" />
                     </template>
@@ -11,7 +18,7 @@
                     </template>
                 </q-avatar>
             </div>
-            <input type="file" ref="fileInput" @change="handleFileChange" hidden accept="image/*" />
+            <input type="file" ref="fileInput" name="photoImage" @change="handleFileChange" hidden accept="image/*" />
             <q-card-section>
                 <div class="q-pa-md example-row-equal-width">
                     <div class="text-h6 q-mx-xl q-my-sm">About Me</div>
@@ -286,6 +293,7 @@
 <script>
 import configuration from 'src/configuration.js';
 import utils from 'src/utils';
+import { initializeWithDefaultValue } from 'src/utils';
 import axios from 'axios';
 export default {
     data() {
@@ -332,6 +340,9 @@ export default {
     methods: {
         handleFileChange(event) {
             this.selectedFile = event.target.files[0];
+            if (this.selectedFile) {
+                this.uploadProfileImage();
+            }
         },
         triggerFileUpload() {
             this.$refs.fileInput.click();
@@ -352,10 +363,10 @@ export default {
                     .patch(`http://localhost:3001/api/service-provider/profile`, userDataToUpdate)
                     .then((response) => {
                         console.log('Server response:', response);
-                        sessionStorage.setItem('user', JSON.stringify(response.data.user));
-                        sessionStorage.setItem('workExperience', JSON.stringify(response.data.workExperience));
-                        sessionStorage.setItem('education', JSON.stringify(response.data.education));
-                        sessionStorage.setItem('languages', JSON.stringify(response.data.language));
+                        sessionStorage.setItem('user', JSON.stringify(response.data.user) || {});
+                        sessionStorage.setItem('workExperience', JSON.stringify(response.data.workExperience || {}));
+                        sessionStorage.setItem('education', JSON.stringify(response.data.education || {}));
+                        sessionStorage.setItem('languages', JSON.stringify(response.data.language || []));
                     })
                     .catch((error) => {
                         console.error('There was an error!', error);
@@ -375,12 +386,20 @@ export default {
                     .get(`http://localhost:3001/api/service-provider/${userId}`)
                     .then((response) => {
                         const userDataFetched = response.data;
-                        this.user = userDataFetched.user;
-                        this.skills = userDataFetched.user.skills;
+                        this.user = userDataFetched.user || {};
+                        this.skills = userDataFetched.user?.skills.length
+                            ? userDataFetched.user.skills
+                            : [{ name: '' }, { name: '' }, { name: '' }];
                         console.log('userDataFetched.user.skills', userDataFetched.user.skills);
-                        this.education = userDataFetched.education;
-                        this.workExperience = userDataFetched.workExperience;
-                        this.languages = userDataFetched.languages;
+                        this.education = userDataFetched.education || {};
+                        this.workExperience = userDataFetched.workExperience || {};
+                        this.languages = userDataFetched.languages.length
+                            ? userDataFetched.languages
+                            : [
+                                  { language: '', proficiency: '' },
+                                  { language: '', proficiency: '' }
+                              ];
+                        console.log('userDataFetched.languages', userDataFetched.languages);
 
                         sessionStorage.setItem('user', JSON.stringify(this.user));
                         sessionStorage.setItem('education', JSON.stringify(this.education));
@@ -393,12 +412,12 @@ export default {
                         console.error('There was an error fetching user data!', error);
                     });
             } else if (userData && education && workExperience && languages) {
-                this.user = userData;
-                this.skills = userData.skills;
+                this.user = userData || {};
+                this.skills = userData.skills || [];
                 console.log('userData.skills', userData.skills);
-                this.education = education;
-                this.workExperience = workExperience;
-                this.languages = languages;
+                this.education = education || {};
+                this.workExperience = workExperience || {};
+                this.languages = languages || [];
                 console.log('Session storage assigned', this.user);
             } else {
                 console.error('Missing userId in sessionStorage');
@@ -416,18 +435,40 @@ export default {
                             'Content-Type': 'multipart/form-data'
                         }
                     });
-                    console.log('Profile image uploaded:', response);
-                    this.user.profileImage = response.data.profileImage;
+                    console.log('Profile image uploaded:', response.data.photoUrl);
+                    this.user.profileImage = response.data.photoUrl;
                 } catch (error) {
                     console.error('There was an error uploading the profile image!', error);
                 }
             } else {
                 console.error('No file selected or UserId not found in sessionStorage');
             }
+        },
+        async loadProfileImage() {
+            const userId = JSON.parse(sessionStorage.getItem('userId'));
+            let userData = JSON.parse(sessionStorage.getItem('user'));
+
+            if (userData && userData.profileImage) {
+                this.user.profileImage = userData.profileImage;
+                console.log('Loaded profile image from session storage', this.user.profileImage);
+            } else if (userId) {
+                try {
+                    const response = await axios.get(`http://localhost:3001/api/service-provider/photo/${userId}`);
+                    const userPhoto = response.data.photoUrl;
+                    this.user.profileImage = userPhoto;
+                    sessionStorage.setItem('user', JSON.stringify(this.user));
+                    console.log('Data loaded from API and assigned', this.user);
+                } catch (error) {
+                    console.error('There was an error fetching user data!', error);
+                }
+            } else {
+                console.error('Missing userId in sessionStorage');
+            }
         }
     },
     mounted() {
         this.loadUserData();
+        this.loadProfileImage();
     }
 };
 </script>
