@@ -200,10 +200,6 @@ export default {
             } else {
                 profileImage.value = defaultImage;
                 console.error('Missing userId in sessionStorage');
-                this.$q.notify({
-                    type: 'negative',
-                    message: 'Unable to load your profile image. Please try again later.'
-                });
             }
         }
 
@@ -229,7 +225,8 @@ export default {
             profileImage,
             userName,
             userEmail,
-            loadProfileImage
+            loadProfileImage,
+            loadUserData
         };
     },
     methods: {

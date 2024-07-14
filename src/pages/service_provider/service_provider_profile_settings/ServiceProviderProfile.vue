@@ -85,15 +85,24 @@
                             class="col q-ma-md"
                             style="max-width: 300px"
                         />
-                        <q-input
+                        <q-select
                             v-model="user.country"
+                            :options="countries"
                             label-color="#050301"
                             color="purple-5"
                             label="Country"
                             stack-label
+                            use-input
                             class="col q-ma-md"
                             style="max-width: 300px"
-                        />
+                            @filter="filterCountries"
+                        >
+                            <template v-slot:no-option>
+                                <q-item>
+                                    <q-item-section class="text-grey"> No results </q-item-section>
+                                </q-item>
+                            </template>
+                        </q-select>
                     </div>
                     <div class="row justify-center q-gutter-sm">
                         <q-input
@@ -291,9 +300,10 @@
 </template>
 
 <script>
+import { Notify } from 'quasar';
 import configuration from 'src/configuration.js';
+import { countries } from 'src/assets/location';
 import utils from 'src/utils';
-import { initializeWithDefaultValue } from 'src/utils';
 import axios from 'axios';
 export default {
     data() {
@@ -332,6 +342,7 @@ export default {
             skills: [{ name: '' }, { name: '' }, { name: '' }],
             selectedFile: null,
             documentTypes: configuration.documentTypes,
+            countries: countries,
             proficiencyLevels: configuration.proficiencyLevels,
             dateOfBirthRules: utils.dateOfBirthRules,
             phoneNumberRules: utils.phoneNumberRules
@@ -367,9 +378,19 @@ export default {
                         sessionStorage.setItem('workExperience', JSON.stringify(response.data.workExperience || {}));
                         sessionStorage.setItem('education', JSON.stringify(response.data.education || {}));
                         sessionStorage.setItem('languages', JSON.stringify(response.data.language || []));
+                        Notify.create({
+                            message: 'Profile successfully saved!',
+                            type: 'positive',
+                            position: 'bottom'
+                        });
                     })
                     .catch((error) => {
                         console.error('There was an error!', error);
+                        Notify.create({
+                            message: 'Failed to save profile. Please try again.',
+                            type: 'negative',
+                            position: 'bottom'
+                        });
                     });
             } else {
                 console.error('UserId not found in sessionStorage');
@@ -426,17 +447,23 @@ export default {
         async uploadProfileImage() {
             const userId = JSON.parse(sessionStorage.getItem('userId'));
             if (userId && this.selectedFile) {
+                console.log(this.selectedFile);
                 const formData = new FormData();
                 formData.append('profileImage', this.selectedFile);
                 formData.append('userId', userId);
                 try {
-                    const response = await axios.post('http://localhost:3001/api/service-provider/profile', formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
+                    const response = await axios.post(
+                        'http://localhost:3001/api/service-provider/profile/upload-photo',
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
                         }
-                    });
-                    console.log('Profile image uploaded:', response.data.photoUrl);
-                    this.user.profileImage = response.data.photoUrl;
+                    );
+                    const fullPhotoUrl = `http://localhost:3001/${response.data.photoUrl}`;
+                    console.log('Profile image uploaded:', fullPhotoUrl);
+                    this.user.profileImage = fullPhotoUrl;
                 } catch (error) {
                     console.error('There was an error uploading the profile image!', error);
                 }
@@ -454,8 +481,7 @@ export default {
             } else if (userId) {
                 try {
                     const response = await axios.get(`http://localhost:3001/api/service-provider/photo/${userId}`);
-                    const userPhoto = response.data.photoUrl;
-                    this.user.profileImage = userPhoto;
+                    this.user.profileImage = response.data.photoUrl;
                     sessionStorage.setItem('user', JSON.stringify(this.user));
                     console.log('Data loaded from API and assigned', this.user);
                 } catch (error) {
@@ -464,6 +490,12 @@ export default {
             } else {
                 console.error('Missing userId in sessionStorage');
             }
+        },
+        filterCountries(val, update) {
+            update(() => {
+                const needle = val.toLowerCase();
+                this.countries = this.countries.filter((v) => v.toLowerCase().indexOf(needle) > -1);
+            });
         }
     },
     mounted() {
@@ -487,5 +519,6 @@ export default {
 .save-profile-btn {
     margin: 20px;
     background-color: #8e68b2;
+    color: #f2f2f2;
 }
 </style>

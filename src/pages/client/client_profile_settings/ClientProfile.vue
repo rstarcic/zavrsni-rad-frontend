@@ -191,8 +191,10 @@
                             />
                         </div>
                     </div>
-                    <div class="center">
-                        <q-btn class="save-changes-btn q-my-lg" @click="saveProfileChanges">Save changes</q-btn>
+                    <div class="save-changes-container">
+                        <div class="q-mt-lg">
+                            <q-btn class="save-changes-btn q-my-lg" @click="saveProfileChanges">Save changes</q-btn>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -201,6 +203,7 @@
 </template>
 
 <script>
+import { Notify } from 'quasar';
 import axios from 'axios';
 import { countries } from 'src/assets/location';
 import configuration from 'src/configuration';
@@ -236,6 +239,9 @@ export default {
     methods: {
         handleFileChange(event) {
             this.selectedFile = event.target.files[0];
+            if (this.selectedFile) {
+                this.uploadProfileImage();
+            }
         },
         async loadUserData() {
             let userData = JSON.parse(sessionStorage.getItem('user'));
@@ -260,37 +266,95 @@ export default {
         async saveProfileChanges() {
             const userId = JSON.parse(sessionStorage.getItem('userId'));
             if (userId) {
-                const formData = new FormData();
-                for (const key in this.user) {
-                    formData.append(key, this.user[key]);
-                }
-                if (this.selectedFile) {
-                    formData.append('file', this.selectedFile);
-                }
-                console.log(this.selectedFile);
+                const userDataToUpdate = {
+                    user: this.user,
+                    userId
+                };
                 await axios
-                    .patch(`http://localhost:3001/api/client/profile`, formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    })
+                    .patch(`http://localhost:3001/api/client/profile`, userDataToUpdate)
                     .then((response) => {
+                        this.user.profileImage = response.data.photoUrl;
                         console.log('Server response:', response.data.userDataUpdated);
                         sessionStorage.setItem('user', JSON.stringify(response.data.userDataUpdated));
+                        Notify.create({
+                            message: 'Profile successfully saved!',
+                            type: 'positive',
+                            position: 'bottom'
+                        });
+                        this.loadProfileImage();
                     })
                     .catch((error) => {
                         console.error('There was an error!', error);
+                        Notify.create({
+                            message: 'Failed to save profile. Please try again.',
+                            type: 'negative',
+                            position: 'bottom'
+                        });
                     });
-            } else if (userData) {
+            } else {
                 console.error('UserId not found in sessionStorage');
             }
         },
         triggerFileUpload() {
             this.$refs.fileInput.click();
+        },
+        async uploadProfileImage() {
+            const userId = JSON.parse(sessionStorage.getItem('userId'));
+            if (userId && this.selectedFile) {
+                const formData = new FormData();
+                formData.append('profileImage', this.selectedFile);
+                formData.append('userId', userId);
+                try {
+                    const response = await axios.post(
+                        'http://localhost:3001/api/client/profile/upload-photo',
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    );
+                    const fullPhotoUrl = `http://localhost:3001/${response.data.photoUrl}`;
+                    console.log('Profile image uploaded:', fullPhotoUrl);
+                    this.user.profileImage = fullPhotoUrl;
+                } catch (error) {
+                    console.error('There was an error uploading the profile image!', error);
+                }
+            } else {
+                console.error('No file selected or UserId not found in sessionStorage');
+            }
+        },
+        async loadProfileImage() {
+            const userId = JSON.parse(sessionStorage.getItem('userId'));
+            let userData = JSON.parse(sessionStorage.getItem('user'));
+
+            if (userData && userData.profileImage) {
+                this.user.profileImage = userData.profileImage;
+                console.log('Loaded profile image from session storage', this.user.profileImage);
+            } else if (userId) {
+                try {
+                    const response = await axios.get(`http://localhost:3001/api/client/photo/${userId}`);
+                    const userPhoto = response.data.photoUrl;
+                    this.user.profileImage = userPhoto;
+                    sessionStorage.setItem('user', JSON.stringify(this.user));
+                    console.log('Data loaded from API and assigned', this.user);
+                } catch (error) {
+                    console.error('There was an error fetching user data!', error);
+                }
+            } else {
+                console.error('Missing userId in sessionStorage');
+            }
+        },
+        filterCountries(val, update) {
+            update(() => {
+                const needle = val.toLowerCase();
+                this.countries = this.countries.filter((v) => v.toLowerCase().indexOf(needle) > -1);
+            });
         }
     },
     mounted() {
         this.loadUserData();
+        this.loadProfileImage();
     }
 };
 </script>
@@ -304,10 +368,20 @@ export default {
 
 .profile-card {
     background-color: #ffffff !important;
-    padding: 15px 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.save-changes-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.save-changes-btn {
+    background-color: #8e68b2;
+    color: #f2f2f2;
 }
 </style>
