@@ -132,7 +132,6 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import defaultImage from 'src/assets/profile-account-unknown.jpg';
-import axios from 'axios';
 export default {
     name: 'ClientLayout',
     props: {
@@ -172,7 +171,7 @@ export default {
 
             if (!userData && userId) {
                 try {
-                    const response = await axios.get(`http://localhost:3001/api/client/${userId}`);
+                    const response = await this.$api.get(`/client/${userId}`);
                     const userDataFetched = response.data.user;
                     if (userDataFetched.type === 'business') {
                         companyName.value = userDataFetched.companyName;
@@ -209,7 +208,7 @@ export default {
                 console.log('Loaded profile image from session storage', this.user.profileImage);
             } else if (userId) {
                 try {
-                    const response = await axios.get(`http://localhost:3001/api/client/photo/${userId}`);
+                    const response = await this.$api.get(`/client/photo/${userId}`);
                     const userPhoto = response.data.photoUrl;
                     profileImage.value = userPhoto || defaultImage;
                     console.log('Data loaded from API and assigned', this.user);

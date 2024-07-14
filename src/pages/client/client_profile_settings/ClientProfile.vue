@@ -204,7 +204,6 @@
 
 <script>
 import { Notify } from 'quasar';
-import axios from 'axios';
 import { countries } from 'src/assets/location';
 import configuration from 'src/configuration';
 import utils from 'src/utils';
@@ -247,8 +246,8 @@ export default {
             let userData = JSON.parse(sessionStorage.getItem('user'));
             let userId = JSON.parse(sessionStorage.getItem('userId'));
             if (!userData && userId) {
-                await axios
-                    .get(`http://localhost:3001/api/client/${userId}`)
+                await this.$api
+                    .get(`/client/${userId}`)
                     .then((response) => {
                         userData = response.data.userDataFetched;
                         sessionStorage.setItem('user', JSON.stringify({ ...userData }));
@@ -270,8 +269,8 @@ export default {
                     user: this.user,
                     userId
                 };
-                await axios
-                    .patch(`http://localhost:3001/api/client/profile`, userDataToUpdate)
+                await this.$api
+                    .patch(`/client/profile`, userDataToUpdate)
                     .then((response) => {
                         this.user.profileImage = response.data.photoUrl;
                         console.log('Server response:', response.data.userDataUpdated);
@@ -305,15 +304,11 @@ export default {
                 formData.append('profileImage', this.selectedFile);
                 formData.append('userId', userId);
                 try {
-                    const response = await axios.post(
-                        'http://localhost:3001/api/client/profile/upload-photo',
-                        formData,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
+                    const response = await this.$api.post('/client/profile/upload-photo', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
                         }
-                    );
+                    });
                     const fullPhotoUrl = `http://localhost:3001/${response.data.photoUrl}`;
                     console.log('Profile image uploaded:', fullPhotoUrl);
                     this.user.profileImage = fullPhotoUrl;
@@ -333,7 +328,7 @@ export default {
                 console.log('Loaded profile image from session storage', this.user.profileImage);
             } else if (userId) {
                 try {
-                    const response = await axios.get(`http://localhost:3001/api/client/photo/${userId}`);
+                    const response = await this.$api.get(`/client/photo/${userId}`);
                     const userPhoto = response.data.photoUrl;
                     this.user.profileImage = userPhoto;
                     sessionStorage.setItem('user', JSON.stringify(this.user));

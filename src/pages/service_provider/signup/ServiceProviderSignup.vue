@@ -209,7 +209,7 @@
                             <template v-slot:append>
                                 <q-icon
                                     :name="IsPasswordShowed ? 'fas fa-eye' : 'fas fa-eye-slash'"
-                                    size="20px"
+                                    size="18px"
                                     class="cursor-pointer"
                                     @click="togglePasswordVisibility"
                                 />
@@ -225,7 +225,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { countries } from 'src/assets/location';
 import configuration from 'src/configuration';
 import utils from 'src/utils';
@@ -292,8 +291,8 @@ export default {
                 address: this.address,
                 postalCode: this.postalCode
             };
-            axios
-                .post(`http://localhost:3001/api/auth/signup/service-provider`, userData)
+            this.$api
+                .post(`/auth/signup/service-provider`, userData)
                 .then((response) => {
                     localStorage.setItem('token', response.data.token);
                     const user = response.data.user;

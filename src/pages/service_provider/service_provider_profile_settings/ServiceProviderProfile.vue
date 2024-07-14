@@ -304,7 +304,6 @@ import { Notify } from 'quasar';
 import configuration from 'src/configuration.js';
 import { countries } from 'src/assets/location';
 import utils from 'src/utils';
-import axios from 'axios';
 export default {
     data() {
         return {
@@ -370,8 +369,8 @@ export default {
                     userId
                 };
                 console.log('userDataToUpdate', userDataToUpdate);
-                await axios
-                    .patch(`http://localhost:3001/api/service-provider/profile`, userDataToUpdate)
+                await this.$api
+                    .patch(`/service-provider/profile`, userDataToUpdate)
                     .then((response) => {
                         console.log('Server response:', response);
                         sessionStorage.setItem('user', JSON.stringify(response.data.user) || {});
@@ -403,8 +402,8 @@ export default {
             let workExperience = JSON.parse(sessionStorage.getItem('workExperience'));
             let languages = JSON.parse(sessionStorage.getItem('languages'));
             if (userId) {
-                await axios
-                    .get(`http://localhost:3001/api/service-provider/${userId}`)
+                await this.$api
+                    .get(`/service-provider/${userId}`)
                     .then((response) => {
                         const userDataFetched = response.data;
                         this.user = userDataFetched.user || {};
@@ -452,15 +451,11 @@ export default {
                 formData.append('profileImage', this.selectedFile);
                 formData.append('userId', userId);
                 try {
-                    const response = await axios.post(
-                        'http://localhost:3001/api/service-provider/profile/upload-photo',
-                        formData,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
+                    const response = await this.$api.post('/service-provider/profile/upload-photo', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
                         }
-                    );
+                    });
                     const fullPhotoUrl = `http://localhost:3001/${response.data.photoUrl}`;
                     console.log('Profile image uploaded:', fullPhotoUrl);
                     this.user.profileImage = fullPhotoUrl;
@@ -480,7 +475,7 @@ export default {
                 console.log('Loaded profile image from session storage', this.user.profileImage);
             } else if (userId) {
                 try {
-                    const response = await axios.get(`http://localhost:3001/api/service-provider/photo/${userId}`);
+                    const response = await this.$api.get(`/service-provider/photo/${userId}`);
                     this.user.profileImage = response.data.photoUrl;
                     sessionStorage.setItem('user', JSON.stringify(this.user));
                     console.log('Data loaded from API and assigned', this.user);

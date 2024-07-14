@@ -35,8 +35,14 @@ const routes = [
                 meta: { requiresRole: 'client' }
             },
             {
+                path: 'settings',
+                component: () => import('src/pages/client/client_profile_settings/ClientSettings.vue'),
+                props: true,
+                meta: { requiresRole: 'client' }
+            },
+            {
                 path: 'search-jobs',
-                component: () => import('src/pages/SearchJobs.vue'),
+                component: () => import('src/pages/client/jobs/JobSearch.vue'),
                 props: true,
                 meta: { requiresRole: 'client' }
             }
@@ -48,7 +54,7 @@ const routes = [
         children: [
             {
                 path: 'search-jobs',
-                component: () => import('src/pages/SearchJobs.vue'),
+                component: () => import('src/pages/service_provider/jobs/JobSearch.vue'),
                 meta: { requiresRole: 'service provider' }
             },
             {
@@ -56,6 +62,12 @@ const routes = [
                 component: () =>
                     import('src/pages/service_provider/service_provider_profile_settings/ServiceProviderProfile.vue'),
                 name: 'service-provider-profile',
+                meta: { requiresRole: 'service provider' }
+            },
+            {
+                path: 'settings',
+                component: () =>
+                    import('src/pages/service_provider/service_provider_profile_settings/ServiceProviderSettings.vue'),
                 meta: { requiresRole: 'service provider' }
             }
         ]

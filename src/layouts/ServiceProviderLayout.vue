@@ -98,7 +98,9 @@
                     <q-separator dark />
 
                     <q-item
+                        to="/service-provider/settings"
                         :class="{ active: activeItem === 'settings' }"
+                        exact
                         clickable
                         v-ripple
                         @click="setActive('settings')"
@@ -133,7 +135,6 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import defaultImage from 'src/assets/profile-account-unknown.jpg';
-import axios from 'axios';
 export default {
     name: 'ServiceProviderLayout',
     setup() {
@@ -152,6 +153,7 @@ export default {
 
         function setActive(itemName) {
             activeItem.value = itemName;
+            console.log('Active item set to:', itemName);
         }
 
         async function loadUserData() {
@@ -160,7 +162,7 @@ export default {
 
             if (!userData && userId) {
                 try {
-                    const response = await axios.get(`http://localhost:3001/api/service-provider/${userId}`);
+                    const response = await this.$api.get(`/service-provider/${userId}`);
                     const userDataFetched = response.data.user;
                     userName.value = userDataFetched.firstName + ' ' + userDataFetched.lastName;
                     userEmail.value = userDataFetched.email;
@@ -189,7 +191,7 @@ export default {
                 console.log('Loaded profile image from session storage', this.user.profileImage);
             } else if (userId) {
                 try {
-                    const response = await axios.get(`http://localhost:3001/api/service-provider/photo/${userId}`);
+                    const response = await this.$api.get(`/service-provider/photo/${userId}`);
                     const userPhoto = response.data.photoUrl;
                     profileImage.value = userPhoto || defaultImage;
                     console.log('Data loaded from API and assigned', this.user);

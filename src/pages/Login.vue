@@ -7,7 +7,7 @@
             </q-card-section>
             <q-input v-model="email" label-color="purple-2" color="purple-2" label="Email" stack-label dark>
                 <template v-slot:append>
-                    <q-icon class="fas fa-envelope" size="20px"></q-icon>
+                    <q-icon class="fas fa-envelope" size="18px"></q-icon>
                 </template>
             </q-input>
             <q-input
@@ -22,7 +22,7 @@
                 <template v-slot:append>
                     <q-icon
                         :name="IsPasswordShowed ? 'fas fa-eye' : 'fas fa-eye-slash'"
-                        size="20px"
+                        size="18px"
                         class="cursor-pointer"
                         @click="togglePasswordVisibility"
                     />
@@ -34,8 +34,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
     name: 'LoginPage',
     data() {
@@ -47,8 +45,8 @@ export default {
     },
     methods: {
         login() {
-            axios
-                .post('http://localhost:3001/api/auth/login', {
+            this.$api
+                .post('/auth/login', {
                     email: this.email,
                     password: this.password
                 })

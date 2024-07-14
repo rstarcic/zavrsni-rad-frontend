@@ -36,7 +36,9 @@ export default {
     emailRules: [(val) => !!val || 'Email is required', (val) => /.+@.+\..+/.test(val) || 'Invalid email'],
     passwordRules: [
         (val) => !!val || 'Password is required',
-        (val) => val.length >= 6 || 'Password must be at least 6 characters long'
+        (val) => val.length >= 6 || 'Password must be at least 6 characters long',
+        (val) => /[A-Z]/.test(val) || 'Password must contain at least one uppercase letter',
+        (val) => /[!@#$%^&*(),._?":{}|<>]/.test(val) || 'Password must contain at least one special character'
     ],
     companyNameRules: [
         (val) => !!val || 'Company name is required',
