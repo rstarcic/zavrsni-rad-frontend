@@ -1,6 +1,6 @@
 <template>
     <div class="alignment">
-        <q-card class="login-card shadow-10">
+        <q-card v-if="!deactivationMessage" class="login-card shadow-10">
             <q-card-section>
                 <div class="text-h6">LOGIN</div>
                 <div class="text-subtitle2">Dear user, please login</div>
@@ -30,17 +30,61 @@
             </q-input>
             <q-btn class="login-btn" color="#f2f2f2" label="Sign Up" @click="login" size="12px" />
         </q-card>
+        <q-card v-if="deactivationMessage" class="login-card shadow-10">
+            <q-card-section>
+                <div class="text-h6">Account Deactivated</div>
+                <div class="text-subtitle2">{{ deactivationMessage }}</div>
+                <q-input
+                    v-model="reactivationEmail"
+                    label-color="purple-2"
+                    color="purple-2"
+                    label="Email"
+                    stack-label
+                    dark
+                >
+                    <template v-slot:append>
+                        <q-icon class="fas fa-envelope" size="18px"></q-icon>
+                    </template>
+                </q-input>
+                <q-input
+                    label="New Password"
+                    label-color="purple-2"
+                    color="purple-2"
+                    stack-label
+                    v-model="reactivationPassword"
+                    :type="IsPasswordShowed ? 'text' : 'password'"
+                    dark
+                >
+                    <template v-slot:append>
+                        <q-icon
+                            :name="IsPasswordShowed ? 'fas fa-eye' : 'fas fa-eye-slash'"
+                            size="18px"
+                            class="cursor-pointer"
+                            @click="togglePasswordVisibility"
+                        />
+                    </template>
+                </q-input>
+            </q-card-section>
+            <q-card-actions class="flex justify-center">
+                <q-btn color="positive" label="Reactivate" @click="reactivateAccount" />
+                <q-btn color="negative" label="Cancel" @click="cancelReactivation" />
+            </q-card-actions>
+        </q-card>
     </div>
 </template>
 
 <script>
+import { Notify } from 'quasar';
 export default {
     name: 'LoginPage',
     data() {
         return {
             email: null,
             password: null,
-            IsPasswordShowed: false
+            reactivationPassword: null,
+            reactivationEmail: null,
+            IsPasswordShowed: false,
+            deactivationMessage: null
         };
     },
     methods: {
@@ -67,16 +111,57 @@ export default {
                     }
                 })
                 .catch((error) => {
-                    if (error.response && error.response.status === 401) {
-                        this.errorMessage = 'Incorrect email or password.';
+                    if (error.response && error.response.status === 403) {
+                        this.deactivationMessage = error.response.data.message;
                     } else {
-                        console.error('There was an error!', error);
-                        this.errorMessage = 'An error occurred. Please try again later.';
+                        Notify.create({
+                            color: 'negative',
+                            position: 'bottom',
+                            message: 'Failed to login: ' + error.message,
+                            icon: 'error'
+                        });
+                        console.log('Login failed: ', error);
                     }
                 });
         },
         togglePasswordVisibility() {
             this.IsPasswordShowed = !this.IsPasswordShowed;
+        },
+        reactivateAccount() {
+            this.$api
+                .patch('/account/reactivate', {
+                    email: this.reactivationEmail,
+                    password: this.reactivationPassword
+                })
+                .then((response) => {
+                    sessionStorage.setItem('user', JSON.stringify(response.data.user));
+                    const user = response.data.user;
+                    sessionStorage.setItem('userId', user.id);
+                    localStorage.setItem('token', response.data.token);
+                    console.log(user.id);
+                    if (user.role === 'service provider') {
+                        this.$router.push('/service-provider/search-jobs');
+                    } else if (user.role === 'client' && user.type === 'individual') {
+                        this.$router.push('/client/individual/search-jobs');
+                    } else if (user.role === 'client' && user.type === 'business') {
+                        this.$router.push('/client/business/search-jobs');
+                    } else {
+                        console.error('Unknown role:', user.role);
+                    }
+                    this.deactivationMessage = null;
+                })
+                .catch((error) => {
+                    Notify.create({
+                        color: 'negative',
+                        position: 'bottom',
+                        message: 'Failed to reactivate account: ' + error.message,
+                        icon: 'error'
+                    });
+                    console.log('Account reactivation failed: ', error);
+                });
+        },
+        cancelReactivation() {
+            this.deactivationMessage = null;
         }
     }
 };
@@ -87,6 +172,15 @@ export default {
     width: 400px;
     height: 400px;
     background-color: #642b73 !important;
+    padding: 15px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner {
+    background-color: #d1b32f !important;
     padding: 15px 30px;
     display: flex;
     flex-direction: column;

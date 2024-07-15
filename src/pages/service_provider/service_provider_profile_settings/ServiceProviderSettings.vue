@@ -24,6 +24,24 @@
                             <p>Enter a new password below to change your password.</p>
                             <div class="q-pa-md">
                                 <q-input
+                                    v-model="currentPassword"
+                                    :rules="passwordRules"
+                                    label-color="#050301"
+                                    color="purple-5"
+                                    label="Current password"
+                                    stack-label
+                                    style="max-width: 250px"
+                                    :type="IsCurrentPasswordShowed ? 'text' : 'password'"
+                                >
+                                    <template v-slot:append>
+                                        <q-icon
+                                            :name="IsCurrentPasswordShowed ? 'fas fa-eye' : 'fas fa-eye-slash'"
+                                            size="18px"
+                                            class="cursor-pointer"
+                                            @click="toggleCurrentPasswordVisibility"
+                                        /> </template
+                                ></q-input>
+                                <q-input
                                     v-model="newPassword"
                                     :rules="passwordRules"
                                     label-color="#050301"
@@ -65,44 +83,198 @@
                     </q-tab-panel>
 
                     <q-tab-panel name="deletion">
-                        <div class="text-h6">Delete account</div>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-                        <q-btn color="negative" label="Delete Account" @click="deleteAccount" />
+                        <div class="centered-content q-pa-md">
+                            <div class="text-h6">Delete account</div>
+                            <p>Are you sure you want to delete your account?</p>
+                            <q-btn color="negative" label="Delete Account" @click="showDeletionDialog" />
+                        </div>
                     </q-tab-panel>
 
                     <q-tab-panel name="deactivation">
-                        <div class="text-h6">Movies</div>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        <q-btn color="primary" label="Deactivate Account" @click="deactivateAccount" />
+                        <div class="centered-content q-pa-md">
+                            <div class="text-h6">Deactivate account</div>
+                            <p>Are you sure you want to deactivate your account?</p>
+                            <q-btn color="amber-8" label="Deactivate Account" @click="showDeactivationDialog" />
+                        </div>
                     </q-tab-panel>
                 </q-tab-panels>
             </q-card>
+            <q-dialog v-model="isDeletionDialogVisible">
+                <q-card>
+                    <q-card-section class="row items-center">
+                        <q-icon name="warning" size="2em" color="red" />
+                        <span class="text-h6 q-ml-sm">Confirm Deletion</span>
+                    </q-card-section>
+
+                    <q-card-section>
+                        <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                    </q-card-section>
+
+                    <q-card-actions>
+                        <q-btn label="Cancel" color="primary" v-close-popup />
+                        <q-btn label="Delete" color="negative" @click="deleteAccount" />
+                    </q-card-actions>
+                </q-card>
+            </q-dialog>
+            <q-dialog v-model="isDeactivationDialogVisible">
+                <q-card>
+                    <q-card-section class="row items-center">
+                        <q-icon name="warning" size="2em" color="orange" />
+                        <span class="text-h6 q-ml-sm">Confirm Deactivation</span>
+                    </q-card-section>
+
+                    <q-card-section>
+                        <p>Are you sure you want to deactivate your account?</p>
+                    </q-card-section>
+
+                    <q-card-actions>
+                        <q-btn label="Cancel" color="primary" v-close-popup />
+                        <q-btn label="Deactivate" color="negative" @click="deactivateAccount" />
+                    </q-card-actions>
+                </q-card>
+            </q-dialog>
         </div>
     </div>
 </template>
 
 <script>
+import { Notify } from 'quasar';
 import utils from 'src/utils';
 export default {
     data() {
         return {
             tab: 'password',
-            newPassword: '',
-            confirmedPassword: '',
+            currentPassword: null,
+            newPassword: null,
+            confirmedPassword: null,
+            IsCurrentPasswordShowed: null,
             IsNewPasswordShowed: false,
             IsConfirmedPasswordShowed: false,
+            isDeactivationDialogVisible: false,
+            isDeletionDialogVisible: false,
             passwordRules: utils.passwordRules
         };
     },
     methods: {
+        toggleCurrentPasswordVisibility() {
+            this.IsCurrentPasswordShowed = !this.IsCurrentPasswordShowed;
+        },
         toggleNewPasswordVisibility() {
             this.IsNewPasswordShowed = !this.IsNewPasswordShowed;
         },
         toggleConfirmedPasswordVisibility() {
             this.IsConfirmedPasswordShowed = !this.IsConfirmedPasswordShowed;
         },
-        changePassword() {
-            console.log('Password changed');
+        async changePassword() {
+            const userId = sessionStorage.getItem('userId');
+            if (!userId) {
+                Notify.create({
+                    color: 'negative',
+                    position: 'bottom',
+                    message: 'User id not available.',
+                    icon: 'error'
+                });
+                return;
+            }
+            if (this.newPassword !== this.confirmedPassword) {
+                Notify.create({
+                    color: 'negative',
+                    position: 'bottom',
+                    message: 'Passwords do not match.',
+                    icon: 'report_problem'
+                });
+                return;
+            }
+            await this.$api
+                .patch('/service-provider/account/password', {
+                    userId: userId,
+                    currentPassword: this.currentPassword,
+                    newPassword: this.newPassword,
+                    confirmedPassword: this.confirmedPassword
+                })
+                .then((response) => {
+                    console.log('Server response:', response.data);
+                    Notify.create({
+                        color: 'positive',
+                        position: 'bottom',
+                        message: 'Password successfully changed.',
+                        icon: 'check_circle'
+                    });
+                    console.log('Password changed');
+                })
+                .catch((error) => {
+                    Notify.create({
+                        color: 'negative',
+                        position: 'bottom',
+                        message: 'Failed to change password: ' + error.message,
+                        icon: 'error'
+                    });
+                    console.log('Password change failed: ', error);
+                });
+        },
+        showDeactivationDialog() {
+            this.isDeactivationDialogVisible = true;
+        },
+        showDeletionDialog() {
+            this.isDeletionDialogVisible = true;
+        },
+        async deactivateAccount() {
+            await this.$api
+                .patch('/service-provider/account/deactivate')
+                .then((response) => {
+                    console.log('Server response:', response.data);
+                    Notify.create({
+                        color: 'positive',
+                        position: 'bottom',
+                        message: 'Account successfully deactivated.',
+                        icon: 'check_circle'
+                    });
+                    sessionStorage.clear();
+                    localStorage.removeItem('token');
+                    this.$router.push('/');
+                })
+                .catch((error) => {
+                    Notify.create({
+                        color: 'negative',
+                        position: 'bottom',
+                        message: 'Failed to deactivate account: ' + error.message,
+                        icon: 'error'
+                    });
+                    console.log('Account deactivation failed: ', error);
+                })
+                .finally(() => {
+                    console.log('Account deactivated');
+                    this.isDeactivationDialogVisible = false;
+                });
+        },
+        async deleteAccount() {
+            await this.$api
+                .delete('/service-provider/account')
+                .then((response) => {
+                    console.log('Server response:', response.data);
+                    Notify.create({
+                        color: 'positive',
+                        position: 'bottom',
+                        message: 'Account successfully deleted.',
+                        icon: 'check_circle'
+                    });
+                    sessionStorage.clear();
+                    localStorage.removeItem('token');
+                    this.$router.push('/');
+                })
+                .catch((error) => {
+                    Notify.create({
+                        color: 'negative',
+                        position: 'bottom',
+                        message: 'Failed to delete account: ' + error.message,
+                        icon: 'error'
+                    });
+                    console.log('Account deletion failed: ', error);
+                })
+                .finally(() => {
+                    console.log('Account deleted');
+                    this.isDeletionDialogVisible = false;
+                });
         }
     }
 };
@@ -121,5 +293,10 @@ export default {
     align-items: center;
     justify-content: center;
     text-align: center;
+}
+.button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
 }
 </style>

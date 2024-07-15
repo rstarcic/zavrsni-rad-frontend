@@ -233,11 +233,7 @@ export default {
     },
     methods: {
         logout() {
-            sessionStorage.removeItem('user');
-            sessionStorage.removeItem('userId');
-            sessionStorage.removeItem('education');
-            sessionStorage.removeItem('languages');
-            sessionStorage.removeItem('workExperience');
+            sessionStorage.clear();
             localStorage.removeItem('token');
             this.$router.push('/');
         }

@@ -256,8 +256,7 @@ export default {
     },
     methods: {
         logout() {
-            sessionStorage.removeItem('user');
-            sessionStorage.removeItem('userId');
+            sessionStorage.clear();
             localStorage.removeItem('token');
             this.$router.push('/');
         }
