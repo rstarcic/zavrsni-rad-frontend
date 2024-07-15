@@ -47,7 +47,7 @@
                     </template>
                 </q-input>
                 <q-input
-                    label="New Password"
+                    label="Password"
                     label-color="purple-2"
                     color="purple-2"
                     stack-label
