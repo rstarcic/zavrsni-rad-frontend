@@ -113,6 +113,13 @@ export default {
                 .catch((error) => {
                     if (error.response && error.response.status === 403) {
                         this.deactivationMessage = error.response.data.message;
+                    } else if (error.response.status === 401) {
+                        Notify.create({
+                            color: 'negative',
+                            position: 'bottom',
+                            message: 'Incorrect email or password. Please try again.',
+                            icon: 'error'
+                        });
                     } else {
                         Notify.create({
                             color: 'negative',

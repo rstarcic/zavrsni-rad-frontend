@@ -51,6 +51,12 @@ const routes = [
                 component: () => import('src/pages/client/jobs/JobCreation.vue'),
                 props: true,
                 meta: { requiresRole: 'client' }
+            },
+            {
+                path: 'posted-jobs',
+                component: () => import('src/pages/client/jobs/PostedJobs.vue'),
+                props: true,
+                meta: { requiresRole: 'client' }
             }
         ]
     },

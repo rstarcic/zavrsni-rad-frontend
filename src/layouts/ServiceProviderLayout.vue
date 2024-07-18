@@ -162,7 +162,7 @@ export default {
 
             if (!userData && userId) {
                 try {
-                    const response = await this.$api.get(`/service-provider/${userId}`);
+                    const response = await this.$api.get('/service-provider/data');
                     const userDataFetched = response.data.user;
                     userName.value = userDataFetched.firstName + ' ' + userDataFetched.lastName;
                     userEmail.value = userDataFetched.email;

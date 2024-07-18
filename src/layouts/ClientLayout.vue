@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, inject } from 'vue';
 import { useRoute } from 'vue-router';
 import defaultImage from 'src/assets/profile-account-unknown.jpg';
 export default {
@@ -141,6 +141,7 @@ export default {
         }
     },
     setup(props) {
+        const $api = inject('$api');
         const leftDrawerOpen = ref(false);
         const activeItem = ref('');
         const route = useRoute();
@@ -171,7 +172,7 @@ export default {
 
             if (!userData && userId) {
                 try {
-                    const response = await this.$api.get(`/client/${userId}`);
+                    const response = await $api.get('/client/data');
                     const userDataFetched = response.data.user;
                     if (userDataFetched.type === 'business') {
                         companyName.value = userDataFetched.companyName;
@@ -203,12 +204,13 @@ export default {
             const userId = JSON.parse(sessionStorage.getItem('userId'));
             let userData = JSON.parse(sessionStorage.getItem('user'));
 
-            if (userData && userData.profileImage) {
+            if (userData || userData.profileImage) {
                 profileImage.value = userData.profileImage || defaultImage;
                 console.log('Loaded profile image from session storage', this.user.profileImage);
             } else if (userId) {
                 try {
-                    const response = await this.$api.get(`/client/photo/${userId}`);
+                    const response = await $api.get(`/client/photo/${userId}`);
+                    console.log('Repsonse photourl', userPhoto);
                     const userPhoto = response.data.photoUrl;
                     profileImage.value = userPhoto || defaultImage;
                     console.log('Data loaded from API and assigned', this.user);

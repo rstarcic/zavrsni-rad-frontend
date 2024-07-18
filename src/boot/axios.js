@@ -21,5 +21,6 @@ api.interceptors.request.use(
 );
 
 export default boot(({ app }) => {
+    app.provide('$api', api);
     app.config.globalProperties.$api = api;
 });

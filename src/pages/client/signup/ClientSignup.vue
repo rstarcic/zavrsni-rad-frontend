@@ -391,6 +391,7 @@
 </template>
 
 <script>
+import { Notify } from 'quasar';
 import utils from 'src/utils.js';
 import configuration from 'src/configuration.js';
 import { countries } from 'src/assets/location.js';
@@ -494,6 +495,21 @@ export default {
                     }
                 })
                 .catch((error) => {
+                    if (error.response && error.response.status === 409) {
+                        Notify.create({
+                            color: 'negative',
+                            position: 'bottom',
+                            message: 'User with this email already exists. Please try with a different email.',
+                            icon: 'error'
+                        });
+                    } else {
+                        Notify.create({
+                            color: 'negative',
+                            position: 'bottom',
+                            message: 'There was an error! ' + error.message,
+                            icon: 'error'
+                        });
+                    }
                     console.error('There was an error!', error);
                 });
         }

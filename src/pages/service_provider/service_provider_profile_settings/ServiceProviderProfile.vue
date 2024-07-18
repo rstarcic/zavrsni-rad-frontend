@@ -403,7 +403,7 @@ export default {
             let languages = JSON.parse(sessionStorage.getItem('languages'));
             if (userId) {
                 await this.$api
-                    .get(`/service-provider/${userId}`)
+                    .get('/service-provider/data')
                     .then((response) => {
                         const userDataFetched = response.data;
                         this.user = userDataFetched.user || {};

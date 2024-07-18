@@ -252,7 +252,6 @@ export default {
                         icon: 'error',
                         message: 'Failed to post job.'
                     });
-                    console.log('Login failed: ', error);
                 });
         }
     }
@@ -263,7 +262,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 150vh;
 }
 
 .job-card-design {

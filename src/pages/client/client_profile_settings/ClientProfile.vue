@@ -247,7 +247,7 @@ export default {
             let userId = JSON.parse(sessionStorage.getItem('userId'));
             if (!userData && userId) {
                 await this.$api
-                    .get(`/client/${userId}`)
+                    .get('/client/data')
                     .then((response) => {
                         userData = response.data.userDataFetched;
                         sessionStorage.setItem('user', JSON.stringify({ ...userData }));
