@@ -1,19 +1,29 @@
 <template>
     <q-card class="job-card text-white">
         <q-card-section>
-            <div class="text-h6">{{ job.title }}</div>
-            <div class="row card-text" v-for="(detail, index) in job.details" :key="index">
-                <q-icon class="icon" :name="detail.icon" :color="iconColor"></q-icon>
-                <span>{{ detail.text }}</span>
+            <div class="text-h6"><q-icon :name="icons.title" :color="iconColor" class="icon" /> {{ job.title }}</div>
+            <div class="text-left row-item">
+                <q-icon :name="icons.category" :color="iconColor" class="icon" />{{ job.category }}
+            </div>
+            <div class="text-left row-item">
+                <q-icon :name="icons.hourlyRate" :color="iconColor" class="icon" />{{ job.hourlyRate }}
+                {{ job.paymentCurrency }}/h
+            </div>
+            <div class="text-left row-item">
+                <q-icon :name="icons.location" :color="iconColor" class="icon" />{{ job.location }}
+            </div>
+            <div class="text-left row-item">
+                <q-icon :name="icons.contactInfo" :color="iconColor" class="icon" />{{ job.contactInfo }}
             </div>
         </q-card-section>
         <q-card-actions>
-            <q-btn flat>Show details</q-btn>
+            <q-btn>Show details</q-btn>
         </q-card-actions>
     </q-card>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 const props = defineProps({
     job: {
         type: Object,
@@ -25,16 +35,18 @@ const props = defineProps({
     }
 });
 
-defineOptions({
-    name: 'JobCardComponent',
-    methods: {}
+const icons = ref({
+    category: 'fas fa-shapes',
+    hourlyRate: 'fas fa-coins',
+    location: 'fas fa-location-dot',
+    contactInfo: 'fas fa-address-book'
 });
 </script>
 
 <style scoped>
 .job-card {
     padding: 15px 30px;
-    max-width: 400px;
+    width: 300px;
     background-color: #643f7d;
 }
 
@@ -46,11 +58,10 @@ defineOptions({
 }
 
 .icon {
-    padding-right: 10px;
+    padding-right: 15px;
 }
-.card-text {
-    display: flex;
-    align-items: left;
-    justify-content: left;
+
+.row-item {
+    margin-bottom: 10px;
 }
 </style>

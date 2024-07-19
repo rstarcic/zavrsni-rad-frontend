@@ -182,7 +182,7 @@ export default {
                     userEmail.value = userDataFetched.email;
                     console.log('User data loaded and assigned', userData);
                 } catch (error) {
-                    console.error('There was an error fetching user data!', error);
+                    console.log('There was an error fetching user data!', error);
                     userName.value = defaultUserName;
                     userEmail.value = defaultUserEmail;
                 }
@@ -193,7 +193,6 @@ export default {
                     userName.value = userData.firstName + ' ' + userData.lastName;
                 }
                 userEmail.value = userData.email;
-                console.error('Missing userId in sessionStorage');
             } else {
                 userName.value = defaultUserName;
                 userEmail.value = defaultUserEmail;
@@ -204,7 +203,7 @@ export default {
             const userId = JSON.parse(sessionStorage.getItem('userId'));
             let userData = JSON.parse(sessionStorage.getItem('user'));
 
-            if (userData || userData.profileImage) {
+            if (userData && userData.profileImage) {
                 profileImage.value = userData.profileImage || defaultImage;
                 console.log('Loaded profile image from session storage', this.user.profileImage);
             } else if (userId) {
@@ -216,11 +215,11 @@ export default {
                     console.log('Data loaded from API and assigned', this.user);
                 } catch (error) {
                     profileImage.value = defaultImage;
-                    console.error('There was an error fetching user data!', error);
+                    console.log('There was an error fetching user data!', error);
                 }
             } else {
                 profileImage.value = defaultImage;
-                console.error('Missing userId in sessionStorage');
+                console.log('Missing userId in sessionStorage');
             }
         }
 

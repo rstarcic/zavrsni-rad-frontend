@@ -43,5 +43,15 @@ export default {
     companyNameRules: [
         (val) => !!val || 'Company name is required',
         (val) => /^[A-Za-zČĆŠĐŽčćšđž][A-Za-zČĆŠĐŽčćšđž0-9\s\.\,\&\-\']*$/.test(val) || 'Invalid company name'
-    ]
+    ],
+    deadlineRules: [
+        (val) => !!val || 'Deadline is required',
+        (val) => {
+            if (!val) return true;
+            const currentDate = new Date();
+            const deadlineDate = new Date(val);
+            return deadlineDate > currentDate || 'Deadline must be a future date';
+        }
+    ],
+    required: [(val) => !!val || 'This field is required']
 };

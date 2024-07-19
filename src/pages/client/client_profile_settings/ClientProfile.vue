@@ -322,15 +322,15 @@ export default {
         async loadProfileImage() {
             const userId = JSON.parse(sessionStorage.getItem('userId'));
             let userData = JSON.parse(sessionStorage.getItem('user'));
-
+            console.log('userData', userData);
+            console.log(userData.profileImage);
             if (userData && userData.profileImage) {
                 this.user.profileImage = userData.profileImage;
                 console.log('Loaded profile image from session storage', this.user.profileImage);
             } else if (userId) {
                 try {
                     const response = await this.$api.get(`/client/photo/${userId}`);
-                    const userPhoto = response.data.photoUrl;
-                    this.user.profileImage = userPhoto;
+                    this.user.profileImage = response.data.photoUrl;
                     sessionStorage.setItem('user', JSON.stringify(this.user));
                     console.log('Data loaded from API and assigned', this.user);
                 } catch (error) {

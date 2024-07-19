@@ -34,7 +34,7 @@
                                     size="sm"
                                     label="View job details"
                                     @click="viewDetails(job.id)"
-                                    color="primary"
+                                    color="cyan-9"
                                     class="q-mx-sm"
                                     padding="7px 10px"
                                 />
@@ -119,14 +119,13 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 50vh;
+    min-height: 70vh;
     padding: 20px;
 }
 
 .alignment-content {
     text-align: center;
-    max-width: 800px;
-    width: 100%;
+    max-width: 1000px;
 }
 
 .header {
@@ -146,6 +145,6 @@ export default {
 }
 
 .larger-table-text {
-    font-size: 16px;
+    font-size: 14px;
 }
 </style>

@@ -14,7 +14,7 @@
         <div class="text-h4 text-offset alignment">Newest <span class="job-color">&nbsp;jobs&nbsp;</span> for you</div>
         <div>
             <div class="row text-offset">
-                <div class="card alignment col-xs-4 col-sm-6 col-md-4" v-for="(job, index) in jobAds" :key="index">
+                <div class="card alignment col-xs-4 col-sm-6 col-md-4" v-for="(job, index) in jobs" :key="index">
                     <JobCardComponent :job="job" :color="color"></JobCardComponent>
                 </div>
             </div>
@@ -48,114 +48,26 @@ export default {
     },
     data() {
         return {
-            jobAds: [
-                {
-                    id: 1,
-                    title: 'Front-End Developer Wanted',
-                    details: [
-                        { icon: 'fas fa-shapes', text: 'Web Development' },
-                        { icon: 'fas fa-euro-sign', text: '40e/hr' },
-                        { icon: 'fas fa-location-dot', text: 'Remote' },
-                        { icon: 'fas fa-address-book', text: 'ivan@company.com' }
-                    ]
-                },
-                {
-                    id: 2,
-                    title: 'House Painter',
-                    details: [
-                        { icon: 'fas fa-shapes', text: 'Painting' },
-                        { icon: 'fas fa-euro-sign', text: '30e/hr' },
-                        {
-                            icon: 'fas fa-location-dot',
-                            text: 'Milanovićeva ulica 23, Zagreb'
-                        },
-                        { icon: 'fas fa-address-book', text: 'contact@painter.com' }
-                    ]
-                },
-                {
-                    id: 3,
-                    title: 'Graphic Designer for Logo',
-                    details: [
-                        { icon: 'fas fa-shapes', text: 'Graphic Design' },
-                        { icon: 'fas fa-euro-sign', text: '45e/hr' },
-                        {
-                            icon: 'fas fa-location-dot',
-                            text: 'Argonautska ulica 58, Virovitica'
-                        },
-                        { icon: 'fas fa-address-book', text: 'design@graphics.com' }
-                    ]
-                },
-                {
-                    id: 4,
-                    title: 'Gardening Assistance Required',
-                    details: [
-                        { icon: 'fas fa-shapes', text: 'Gardening' },
-                        { icon: 'fas fa-euro-sign', text: '25e/hr' },
-                        { icon: 'fas fa-location-dot', text: 'Istarska ulica, Osijek' },
-                        { icon: 'fas fa-address-book', text: 'gardenhelp@landscaping.com' }
-                    ]
-                },
-                {
-                    id: 5,
-                    title: 'Pet Sitting for the Weekend',
-                    details: [
-                        { icon: 'fas fa-shapes', text: 'Pet Service' },
-                        { icon: 'fas fa-euro-sign', text: '20e/hr' },
-                        { icon: 'fas fa-location-dot', text: 'Trpinjska cesta 7, Rijeka' },
-                        { icon: 'fas fa-address-book', text: 'petsitter@animals.com' }
-                    ]
-                },
-                {
-                    id: 6,
-                    title: 'Event Planner',
-                    details: [
-                        { icon: 'fas fa-shapes', text: 'Event Planning' },
-                        { icon: 'fas fa-euro-sign', text: '50e/hr' },
-                        {
-                            icon: 'fas fa-location-dot',
-                            text: 'Krčka ulica 14, Mali Lošinj'
-                        },
-                        { icon: 'fas fa-address-book', text: 'events@planner.com' }
-                    ]
-                },
-                {
-                    id: 7,
-                    title: 'Tutor Needed for Math Tutoring',
-                    details: [
-                        { icon: 'fas fa-shapes', text: 'Tutoring' },
-                        { icon: 'fas fa-euro-sign', text: '35e/hr' },
-                        { icon: 'fas fa-location-dot', text: 'Zadarska ulica 29, Zadar' },
-                        { icon: 'fas fa-address-book', text: 'mathtutor@education.com' }
-                    ]
-                },
-                {
-                    id: 8,
-                    title: 'Furniture Assembly',
-                    details: [
-                        { icon: 'fas fa-shapes', text: 'Furniture Assembly' },
-                        { icon: 'fas fa-euro-sign', text: '25e/hr' },
-                        {
-                            icon: 'fas fa-location-dot',
-                            text: 'Ulica Eugena Kvaternika, Vinkovci'
-                        },
-                        { icon: 'fas fa-address-book', text: 'assembly@furniture.com' }
-                    ]
-                },
-                {
-                    id: 9,
-                    title: 'Photographer for Family Event',
-                    details: [
-                        { icon: 'fas fa-shapes', text: 'Photography' },
-                        { icon: 'fas fa-euro-sign', text: '50e/hr' },
-                        { icon: 'fas fa-location-dot', text: '123 Main Street, Your City' },
-                        { icon: 'fas fa-address-book', text: 'photographer@example.com' }
-                    ]
-                }
-            ],
+            jobs: [],
             color: '#642b73'
         };
     },
-    methods: {}
+    methods: {
+        async fetchDataForHomePage() {
+            await this.$api
+                .get('/jobs/summary', { params: { limit: 9 } })
+                .then((response) => {
+                    this.jobs = response.data.jobs;
+                    console.log('Jobs ', this.jobs);
+                })
+                .catch((error) => {
+                    console.error('There was an error fetching user data!', error);
+                });
+        }
+    },
+    mounted() {
+        this.fetchDataForHomePage();
+    }
 };
 </script>
 

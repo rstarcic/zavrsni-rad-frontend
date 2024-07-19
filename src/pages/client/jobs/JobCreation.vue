@@ -15,6 +15,7 @@
                     label="Job title"
                     dark
                     class="col"
+                    :rules="requiredRule"
                 />
                 <q-select
                     v-model="jobData.category"
@@ -26,6 +27,7 @@
                     class="col"
                     :debounce="300"
                     use-input
+                    :rules="requiredRule"
                     @filter="filterCategories"
                     popup-content-style="background-color: #642b73; color: white; width:200px;"
                     ><template v-slot:no-option>
@@ -45,6 +47,7 @@
                     class="col"
                     disable
                     value="One-time"
+                    :rules="requiredRule"
                 />
                 <q-input
                     v-model="jobData.workConditions"
@@ -53,6 +56,7 @@
                     label="Work conditions"
                     dark
                     class="col"
+                    :rules="requiredRule"
                 />
             </div>
             <q-input
@@ -63,6 +67,7 @@
                 type="textarea"
                 dark
                 class="col"
+                :rules="requiredRule"
             />
             <div class="row q-gutter-lg custom-row">
                 <q-input
@@ -72,6 +77,7 @@
                     label="Qualifications"
                     dark
                     class="col"
+                    :rules="requiredRule"
                 />
                 <q-input
                     v-model="jobData.equipmentNeeded"
@@ -80,6 +86,7 @@
                     label="Equipment needed"
                     dark
                     class="col"
+                    :rules="requiredRule"
                 />
             </div>
             <div class="row q-gutter-lg custom-row">
@@ -91,6 +98,7 @@
                     suffix="per hour"
                     dark
                     class="col"
+                    :rules="requiredRule"
                 />
                 <q-select
                     v-model="jobData.paymentCurrency"
@@ -102,6 +110,7 @@
                     class="col"
                     use-input
                     :debounce="300"
+                    :rules="requiredRule"
                     @filter="filterCurrencies"
                     popup-content-style="background-color: #642b73; color: white; width:200px;"
                     ><template v-slot:no-option>
@@ -118,6 +127,7 @@
                     suffix="hour/hours"
                     dark
                     class="col"
+                    :rules="requiredRule"
                 />
             </div>
             <div class="row q-gutter-lg custom-row">
@@ -129,6 +139,7 @@
                     disable
                     dark
                     class="col"
+                    :rules="requiredRule"
                 />
                 <q-input
                     v-model="jobData.location"
@@ -137,6 +148,7 @@
                     label="Location"
                     dark
                     class="col"
+                    :rules="requiredRule"
                 />
             </div>
             <div class="row q-gutter-lg custom-row">
@@ -148,6 +160,7 @@
                     dark
                     class="col"
                     hint="Indicate the expected duration of the job (e.g., 3 weeks, 6 months)."
+                    :rules="requiredRule"
                 />
                 <q-input
                     v-model="jobData.contactInfo"
@@ -156,6 +169,7 @@
                     label="Contact information"
                     dark
                     class="col"
+                    :rules="requiredRule"
                 />
             </div>
             <div class="row q-gutter-lg custom-row">
@@ -166,7 +180,7 @@
                     color="purple-2"
                     label="Application deadline"
                     dark
-                    :rules="dateIsValidFormatRule"
+                    :rules="deadlineRules"
                     years-in-month-view
                     class="col"
                 />
@@ -217,7 +231,8 @@ export default {
             categoryOptions: categories,
             currencyOptions: stripeCurrencies,
             dateIsValidFormatRule: utils.dateIsValidFormatRule,
-            deadlineRules: utils.deadlineRules
+            deadlineRules: utils.deadlineRules,
+            requiredRule: utils.required
         };
     },
     methods: {

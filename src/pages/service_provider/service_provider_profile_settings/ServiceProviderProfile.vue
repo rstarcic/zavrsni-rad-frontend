@@ -480,10 +480,10 @@ export default {
                     sessionStorage.setItem('user', JSON.stringify(this.user));
                     console.log('Data loaded from API and assigned', this.user);
                 } catch (error) {
-                    console.error('There was an error fetching user data!', error);
+                    console.log('There was an error fetching user data!', error);
                 }
             } else {
-                console.error('Missing userId in sessionStorage');
+                console.log('Missing userId in sessionStorage');
             }
         },
         filterCountries(val, update) {
