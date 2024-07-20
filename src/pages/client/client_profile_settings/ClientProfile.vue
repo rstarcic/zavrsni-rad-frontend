@@ -4,15 +4,18 @@
             <div class="flex flex-center">
                 <div class="full-width column items-center">
                     <q-avatar size="150px" font-size="52px" color="teal" text-color="white" @click="triggerFileUpload">
-                        <template v-if="user.profileImage">
-                            <img :src="user.profileImage" />
-                        </template>
+                        <!-- <template v-if="user.profileImage"> -->
+                        <img :src="user.profileImage" />
+                        <!-- </template>
                         <template v-else>
                             <q-icon name="cloud_upload" />
-                        </template>
+                        </template> -->
                     </q-avatar>
-
-                    <input type="file" ref="fileInput" @change="handleFileChange" hidden accept="image/*" />
+                    <label for="file-upload" class="custom-file-upload">
+                        <q-icon name="cloud_upload" size="24px" />
+                    </label>
+                    <input id="file-upload" hidden type="file" ref="fileInput" @change="upload" accept="image/*" />
+                    <!-- <input type="file" ref="fileInput" @change="handleFileChange" hidden accept="image/*" /> -->
                 </div>
                 <div class="q-pa-md example-row-equal-width">
                     <div v-if="user.type === 'business'">
@@ -236,6 +239,17 @@ export default {
         };
     },
     methods: {
+        upload(e) {
+            debugger;
+            const image = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(image);
+            reader.onload = (e) => {
+                debugger;
+                this.user.profileImage = e.target.result;
+                console.log(this.user.profileImage);
+            };
+        },
         handleFileChange(event) {
             this.selectedFile = event.target.files[0];
             if (this.selectedFile) {
@@ -249,8 +263,11 @@ export default {
                 await this.$api
                     .get('/client/data')
                     .then((response) => {
+                        debugger;
                         userData = response.data.userDataFetched;
-                        sessionStorage.setItem('user', JSON.stringify({ ...userData }));
+                        sessionStorage.setItem('user', JSON.stringify(response.data.userDataFetched));
+                        console.log('repsonse image:', response.data.userDataFetched.profileImage);
+                        console.log('repsonse user:', response.data.userDataFetched);
                         Object.assign(this.user, userData);
                         console.log('Api assigned', this.user);
                     })
@@ -258,11 +275,13 @@ export default {
                         console.error('There was an error fetching user data!', error);
                     });
             } else if (userData) {
-                Object.assign(this.user, userData);
+                debugger;
+                this.user = { ...userData };
                 console.log('Session storage assigned', this.user);
             }
         },
         async saveProfileChanges() {
+            debugger;
             const userId = JSON.parse(sessionStorage.getItem('userId'));
             if (userId) {
                 const userDataToUpdate = {
@@ -272,15 +291,17 @@ export default {
                 await this.$api
                     .patch(`/client/profile`, userDataToUpdate)
                     .then((response) => {
-                        this.user.profileImage = response.data.photoUrl;
-                        console.log('Server response:', response.data.userDataUpdated);
+                        debugger;
+                        console.log('repsonse image:', response.data.userDataUpdated.profileImage);
                         sessionStorage.setItem('user', JSON.stringify(response.data.userDataUpdated));
+                        console.log('repsonse user:', response.data.userDataUpdated);
+                        this.user.profileImage = response.data.userDataUpdated.profileImage;
+                        console.log('Server response:', response.data.userDataUpdated);
                         Notify.create({
                             message: 'Profile successfully saved!',
                             type: 'positive',
                             position: 'bottom'
                         });
-                        this.loadProfileImage();
                     })
                     .catch((error) => {
                         console.error('There was an error!', error);
@@ -295,12 +316,15 @@ export default {
             }
         },
         triggerFileUpload() {
+            debugger;
             this.$refs.fileInput.click();
         },
         async uploadProfileImage() {
             const userId = JSON.parse(sessionStorage.getItem('userId'));
+
             if (userId && this.selectedFile) {
                 const formData = new FormData();
+
                 formData.append('profileImage', this.selectedFile);
                 formData.append('userId', userId);
                 try {
@@ -319,6 +343,7 @@ export default {
                 console.error('No file selected or UserId not found in sessionStorage');
             }
         },
+        /*
         async loadProfileImage() {
             const userId = JSON.parse(sessionStorage.getItem('userId'));
             let userData = JSON.parse(sessionStorage.getItem('user'));
@@ -326,11 +351,11 @@ export default {
             console.log(userData.profileImage);
             if (userData && userData.profileImage) {
                 this.user.profileImage = userData.profileImage;
-                console.log('Loaded profile image from session storage', this.user.profileImage);
+                console.log('Loaded profile image from session storage', userData.profileImage);
             } else if (userId) {
                 try {
                     const response = await this.$api.get(`/client/photo/${userId}`);
-                    this.user.profileImage = response.data.photoUrl;
+                    this.user.profileImage = response.data.encodedImage;
                     sessionStorage.setItem('user', JSON.stringify(this.user));
                     console.log('Data loaded from API and assigned', this.user);
                 } catch (error) {
@@ -339,7 +364,7 @@ export default {
             } else {
                 console.error('Missing userId in sessionStorage');
             }
-        },
+        },*/
         filterCountries(val, update) {
             update(() => {
                 const needle = val.toLowerCase();
@@ -347,10 +372,15 @@ export default {
             });
         }
     },
-    mounted() {
-        this.loadUserData();
-        this.loadProfileImage();
+
+    async created() {
+        await this.loadUserData();
     }
+    /*
+    async mounted() {
+        await this.loadProfileImage();
+    }
+        */
 };
 </script>
 
@@ -378,5 +408,11 @@ export default {
 .save-changes-btn {
     background-color: #8e68b2;
     color: #f2f2f2;
+}
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
 }
 </style>

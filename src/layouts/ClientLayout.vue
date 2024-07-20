@@ -205,7 +205,7 @@ export default {
 
             if (userData && userData.profileImage) {
                 profileImage.value = userData.profileImage || defaultImage;
-                console.log('Loaded profile image from session storage', this.user.profileImage);
+                console.log('Loaded profile image from session storage', userData.profileImage);
             } else if (userId) {
                 try {
                     const response = await $api.get(`/client/photo/${userId}`);
