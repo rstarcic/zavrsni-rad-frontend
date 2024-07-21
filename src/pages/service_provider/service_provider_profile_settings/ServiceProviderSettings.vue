@@ -285,7 +285,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 70vh;
+    height: 100vh;
 }
 .centered-content {
     display: flex;

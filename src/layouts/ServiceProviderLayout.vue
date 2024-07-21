@@ -145,7 +145,7 @@ export default {
         const userEmail = ref('');
         const route = useRoute();
         const defaultUserName = 'Guest User';
-        const defaultUserEmail = 'No email set';
+        const defaultUserEmail = 'No email';
 
         function toggleLeftDrawer() {
             leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -162,7 +162,7 @@ export default {
 
             if (!userData && userId) {
                 try {
-                    const response = await this.$api.get('/service-provider/data');
+                    const response = await $api.get('/service-provider/data');
                     const userDataFetched = response.data.user;
                     userName.value = userDataFetched.firstName + ' ' + userDataFetched.lastName;
                     userEmail.value = userDataFetched.email;
@@ -188,11 +188,12 @@ export default {
 
             if (userData && userData.profileImage) {
                 profileImage.value = userData.profileImage || defaultImage;
-                console.log('Loaded profile image from session storage', this.user.profileImage);
+                console.log('Loaded profile image from session storage', userData.profileImage);
             } else if (userId) {
                 try {
-                    const response = await this.$api.get(`/service-provider/photo/${userId}`);
-                    const userPhoto = response.data.photoUrl;
+                    debugger;
+                    const response = await $api.get(`/service-provider/photo/${userId}`);
+                    const userPhoto = response.data.encodedImage;
                     profileImage.value = userPhoto || defaultImage;
                     console.log('Data loaded from API and assigned', this.user);
                 } catch (error) {

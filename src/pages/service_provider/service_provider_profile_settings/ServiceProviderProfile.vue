@@ -1,24 +1,20 @@
 <template>
     <q-page class="q-pa-xl">
         <q-card class="profile-card">
-            <div class="full-width column items-center">
-                <q-avatar
-                    class="q-ma-md"
-                    size="170px"
-                    font-size="52px"
-                    color="teal"
-                    text-color="white"
-                    @click="triggerFileUpload"
-                >
+            <div class="full-width column items-center profile-container">
+                <q-avatar class="q-ma-md" size="170px" font-size="52px" color="teal" text-color="white">
                     <template v-if="user.profileImage">
                         <img :src="user.profileImage" />
                     </template>
                     <template v-else>
-                        <q-icon name="cloud_upload" />
+                        <img :src="defaultImage" />
                     </template>
                 </q-avatar>
+                <label for="file-upload" class="custom-file-upload">
+                    <q-icon name="create" size="24px" />
+                </label>
+                <input id="file-upload" hidden type="file" ref="fileInput" @change="upload" accept="image/*" />
             </div>
-            <input type="file" ref="fileInput" name="photoImage" @change="handleFileChange" hidden accept="image/*" />
             <q-card-section>
                 <div class="q-pa-md example-row-equal-width">
                     <div class="text-h6 q-mx-xl q-my-sm">About Me</div>
@@ -304,6 +300,7 @@ import { Notify } from 'quasar';
 import configuration from 'src/configuration.js';
 import { countries } from 'src/assets/location';
 import utils from 'src/utils';
+import image from 'src/assets/profile-account-unknown.jpg';
 export default {
     data() {
         return {
@@ -339,7 +336,7 @@ export default {
                 { language: null, proficiency: null }
             ],
             skills: [{ name: '' }, { name: '' }, { name: '' }],
-            selectedFile: null,
+            defaultImage: image,
             documentTypes: configuration.documentTypes,
             countries: countries,
             proficiencyLevels: configuration.proficiencyLevels,
@@ -348,14 +345,15 @@ export default {
         };
     },
     methods: {
-        handleFileChange(event) {
-            this.selectedFile = event.target.files[0];
-            if (this.selectedFile) {
-                this.uploadProfileImage();
-            }
-        },
-        triggerFileUpload() {
-            this.$refs.fileInput.click();
+        upload(e) {
+            debugger;
+            const image = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(image);
+            reader.onload = (e) => {
+                debugger;
+                this.user.profileImage = e.target.result;
+            };
         },
         async saveProfile() {
             const userId = JSON.parse(sessionStorage.getItem('userId'));
@@ -372,8 +370,11 @@ export default {
                 await this.$api
                     .patch(`/service-provider/profile`, userDataToUpdate)
                     .then((response) => {
+                        debugger;
                         console.log('Server response:', response);
                         sessionStorage.setItem('user', JSON.stringify(response.data.user) || {});
+                        console.log('response.data.updatedUser', response.data.user.profileImage);
+                        this.user.profileImage = response.data.user.profileImage;
                         sessionStorage.setItem('workExperience', JSON.stringify(response.data.workExperience || {}));
                         sessionStorage.setItem('education', JSON.stringify(response.data.education || {}));
                         sessionStorage.setItem('languages', JSON.stringify(response.data.language || []));
@@ -405,6 +406,7 @@ export default {
                 await this.$api
                     .get('/service-provider/data')
                     .then((response) => {
+                        debugger;
                         const userDataFetched = response.data;
                         this.user = userDataFetched.user || {};
                         this.skills = userDataFetched.user?.skills.length
@@ -419,13 +421,10 @@ export default {
                                   { language: '', proficiency: '' },
                                   { language: '', proficiency: '' }
                               ];
-                        console.log('userDataFetched.languages', userDataFetched.languages);
-
                         sessionStorage.setItem('user', JSON.stringify(this.user));
                         sessionStorage.setItem('education', JSON.stringify(this.education));
                         sessionStorage.setItem('workExperience', JSON.stringify(this.workExperience));
                         sessionStorage.setItem('languages', JSON.stringify(this.languages));
-
                         console.log('Data loaded from API and assigned', this.user);
                     })
                     .catch((error) => {
@@ -443,49 +442,6 @@ export default {
                 console.error('Missing userId in sessionStorage');
             }
         },
-        async uploadProfileImage() {
-            const userId = JSON.parse(sessionStorage.getItem('userId'));
-            if (userId && this.selectedFile) {
-                console.log(this.selectedFile);
-                const formData = new FormData();
-                formData.append('profileImage', this.selectedFile);
-                formData.append('userId', userId);
-                try {
-                    const response = await this.$api.post('/service-provider/profile/upload-photo', formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    });
-                    const fullPhotoUrl = `http://localhost:3001/${response.data.photoUrl}`;
-                    console.log('Profile image uploaded:', fullPhotoUrl);
-                    this.user.profileImage = fullPhotoUrl;
-                } catch (error) {
-                    console.error('There was an error uploading the profile image!', error);
-                }
-            } else {
-                console.error('No file selected or UserId not found in sessionStorage');
-            }
-        },
-        async loadProfileImage() {
-            const userId = JSON.parse(sessionStorage.getItem('userId'));
-            let userData = JSON.parse(sessionStorage.getItem('user'));
-
-            if (userData && userData.profileImage) {
-                this.user.profileImage = userData.profileImage;
-                console.log('Loaded profile image from session storage', this.user.profileImage);
-            } else if (userId) {
-                try {
-                    const response = await this.$api.get(`/service-provider/photo/${userId}`);
-                    this.user.profileImage = response.data.photoUrl;
-                    sessionStorage.setItem('user', JSON.stringify(this.user));
-                    console.log('Data loaded from API and assigned', this.user);
-                } catch (error) {
-                    console.log('There was an error fetching user data!', error);
-                }
-            } else {
-                console.log('Missing userId in sessionStorage');
-            }
-        },
         filterCountries(val, update) {
             update(() => {
                 const needle = val.toLowerCase();
@@ -493,9 +449,8 @@ export default {
             });
         }
     },
-    mounted() {
-        this.loadUserData();
-        this.loadProfileImage();
+    async created() {
+        await this.loadUserData();
     }
 };
 </script>
@@ -515,5 +470,22 @@ export default {
     margin: 20px;
     background-color: #8e68b2;
     color: #f2f2f2;
+}
+
+.profile-container {
+    position: relative;
+}
+
+.custom-file-upload {
+    border: 2px solid #f5f5f5;
+    border-radius: 50%;
+    background-color: #c4b4d3;
+    display: inline-block;
+    padding: 10px;
+    cursor: pointer;
+    position: absolute;
+    top: 75%;
+    right: 34%;
+    transform: translateY(-50%);
 }
 </style>

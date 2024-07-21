@@ -95,6 +95,7 @@ export default {
                     password: this.password
                 })
                 .then((response) => {
+                    debugger;
                     localStorage.setItem('token', response.data.token);
                     sessionStorage.setItem('user', JSON.stringify(response.data.user));
                     const user = response.data.user;
@@ -111,6 +112,7 @@ export default {
                     }
                 })
                 .catch((error) => {
+                    debugger;
                     if (error.response && error.response.status === 403) {
                         this.deactivationMessage = error.response.data.message;
                     } else if (error.response.status === 401) {

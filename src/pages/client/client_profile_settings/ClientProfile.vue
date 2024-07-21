@@ -2,20 +2,19 @@
     <div class="alignment q-mt-xl">
         <q-card class="profile-card q-pa-md">
             <div class="flex flex-center">
-                <div class="full-width column items-center">
-                    <q-avatar size="150px" font-size="52px" color="teal" text-color="white" @click="triggerFileUpload">
-                        <!-- <template v-if="user.profileImage"> -->
-                        <img :src="user.profileImage" />
-                        <!-- </template>
+                <div class="full-width column items-center profile-container">
+                    <q-avatar size="150px" font-size="52px" color="teal" text-color="white">
+                        <template v-if="user.profileImage">
+                            <img :src="user.profileImage" />
+                        </template>
                         <template v-else>
-                            <q-icon name="cloud_upload" />
-                        </template> -->
+                            <img :src="defaultImage" />
+                        </template>
                     </q-avatar>
                     <label for="file-upload" class="custom-file-upload">
-                        <q-icon name="cloud_upload" size="24px" />
+                        <q-icon name="create" size="24px" />
                     </label>
                     <input id="file-upload" hidden type="file" ref="fileInput" @change="upload" accept="image/*" />
-                    <!-- <input type="file" ref="fileInput" @change="handleFileChange" hidden accept="image/*" /> -->
                 </div>
                 <div class="q-pa-md example-row-equal-width">
                     <div v-if="user.type === 'business'">
@@ -210,6 +209,7 @@ import { Notify } from 'quasar';
 import { countries } from 'src/assets/location';
 import configuration from 'src/configuration';
 import utils from 'src/utils';
+import image from 'src/assets/profile-account-unknown.jpg';
 export default {
     name: 'ClientProfile',
     data() {
@@ -231,7 +231,7 @@ export default {
                 documentNumber: null,
                 VATnumber: null
             },
-            selectedFile: null,
+            defaultImage: image,
             documentTypes: configuration.documentTypes,
             countries: countries,
             genderOptions: configuration.genderOptions,
@@ -247,14 +247,7 @@ export default {
             reader.onload = (e) => {
                 debugger;
                 this.user.profileImage = e.target.result;
-                console.log(this.user.profileImage);
             };
-        },
-        handleFileChange(event) {
-            this.selectedFile = event.target.files[0];
-            if (this.selectedFile) {
-                this.uploadProfileImage();
-            }
         },
         async loadUserData() {
             let userData = JSON.parse(sessionStorage.getItem('user'));
@@ -315,56 +308,6 @@ export default {
                 console.error('UserId not found in sessionStorage');
             }
         },
-        triggerFileUpload() {
-            debugger;
-            this.$refs.fileInput.click();
-        },
-        async uploadProfileImage() {
-            const userId = JSON.parse(sessionStorage.getItem('userId'));
-
-            if (userId && this.selectedFile) {
-                const formData = new FormData();
-
-                formData.append('profileImage', this.selectedFile);
-                formData.append('userId', userId);
-                try {
-                    const response = await this.$api.post('/client/profile/upload-photo', formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    });
-                    const fullPhotoUrl = `http://localhost:3001/${response.data.photoUrl}`;
-                    console.log('Profile image uploaded:', fullPhotoUrl);
-                    this.user.profileImage = fullPhotoUrl;
-                } catch (error) {
-                    console.error('There was an error uploading the profile image!', error);
-                }
-            } else {
-                console.error('No file selected or UserId not found in sessionStorage');
-            }
-        },
-        /*
-        async loadProfileImage() {
-            const userId = JSON.parse(sessionStorage.getItem('userId'));
-            let userData = JSON.parse(sessionStorage.getItem('user'));
-            console.log('userData', userData);
-            console.log(userData.profileImage);
-            if (userData && userData.profileImage) {
-                this.user.profileImage = userData.profileImage;
-                console.log('Loaded profile image from session storage', userData.profileImage);
-            } else if (userId) {
-                try {
-                    const response = await this.$api.get(`/client/photo/${userId}`);
-                    this.user.profileImage = response.data.encodedImage;
-                    sessionStorage.setItem('user', JSON.stringify(this.user));
-                    console.log('Data loaded from API and assigned', this.user);
-                } catch (error) {
-                    console.error('There was an error fetching user data!', error);
-                }
-            } else {
-                console.error('Missing userId in sessionStorage');
-            }
-        },*/
         filterCountries(val, update) {
             update(() => {
                 const needle = val.toLowerCase();
@@ -372,15 +315,9 @@ export default {
             });
         }
     },
-
     async created() {
         await this.loadUserData();
     }
-    /*
-    async mounted() {
-        await this.loadProfileImage();
-    }
-        */
 };
 </script>
 
@@ -406,13 +343,24 @@ export default {
 }
 
 .save-changes-btn {
-    background-color: #8e68b2;
+    background-color: #8462a5;
     color: #f2f2f2;
 }
+
+.profile-container {
+    position: relative;
+}
+
 .custom-file-upload {
-    border: 1px solid #ccc;
+    border: 2px solid #f5f5f5;
+    border-radius: 50%;
+    background-color: #c4b4d3;
     display: inline-block;
-    padding: 6px 12px;
+    padding: 10px;
     cursor: pointer;
+    position: absolute;
+    top: 80%;
+    right: 38%;
+    transform: translateY(-50%);
 }
 </style>

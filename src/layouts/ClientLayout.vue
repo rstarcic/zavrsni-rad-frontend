@@ -152,7 +152,7 @@ export default {
         const companyName = ref('');
         const userEmail = ref('');
         const defaultUserName = 'Guest User';
-        const defaultUserEmail = 'No email set';
+        const defaultUserEmail = 'No email';
 
         function toggleLeftDrawer() {
             leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -209,8 +209,7 @@ export default {
             } else if (userId) {
                 try {
                     const response = await $api.get(`/client/photo/${userId}`);
-                    console.log('Repsonse photourl', userPhoto);
-                    const userPhoto = response.data.photoUrl;
+                    const userPhoto = response.data.encodedImage;
                     profileImage.value = userPhoto || defaultImage;
                     console.log('Data loaded from API and assigned', this.user);
                 } catch (error) {
