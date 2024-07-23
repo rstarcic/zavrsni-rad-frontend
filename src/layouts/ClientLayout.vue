@@ -12,9 +12,7 @@
                         @click="this.$router.push('/')"
                     />
                 </q-toolbar-title>
-                <q-btn class="logoutBtn q-mx-md" size="md" padding="xs lg" @click="this.$router.push('/')"
-                    >Logout</q-btn
-                >
+                <q-btn class="logoutBtn q-mx-md" size="md" padding="xs lg" @click="logout">Logout</q-btn>
             </q-toolbar>
         </q-header>
 

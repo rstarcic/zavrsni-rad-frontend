@@ -1,4 +1,3 @@
-import { createRouter, createWebHistory } from 'vue-router';
 const routes = [
     {
         path: '/',
@@ -57,6 +56,18 @@ const routes = [
                 component: () => import('src/pages/client/jobs/PostedJobs.vue'),
                 props: true,
                 meta: { requiresRole: 'client' }
+            },
+            {
+                path: 'posted-jobs/details/:jobId',
+                component: () => import('src/pages/client/jobs/PostedJobDetail.vue'),
+                props: true,
+                meta: { requiresRole: 'client' }
+            },
+            {
+                path: 'posted-jobs/candidates/:jobId',
+                component: () => import('src/pages/client/service_provider_profile/ServiceProviderProfileSummary.vue'),
+                props: true,
+                meta: { requiresRole: 'client' }
             }
         ]
     },
@@ -87,7 +98,7 @@ const routes = [
     {
         path: '/unauthorized',
         name: 'Unauthorized',
-        component: () => import('src/components/UnauthorizedComponent.vue')
+        component: () => import('src/pages/UnauthorizedPage.vue')
     },
 
     // Always leave this as last one,
@@ -97,28 +108,5 @@ const routes = [
         component: () => import('pages/ErrorNotFound.vue')
     }
 ];
-
-const router = createRouter({
-    history: createWebHistory(),
-    routes
-});
-
-function hasRole(role) {
-    const user = JSON.parse(sessionStorage.getItem('user'));
-    return user && user.role === role;
-}
-
-router.beforeEach((to, from, next) => {
-    if (to.matched.some((record) => record.meta.requiresRole)) {
-        const role = to.meta.requiresRole;
-        if (!hasRole(role)) {
-            next({ path: '/unauthorized' });
-        } else {
-            next();
-        }
-    } else {
-        next();
-    }
-});
 
 export default routes;
