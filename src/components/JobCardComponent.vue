@@ -17,13 +17,14 @@
             </div>
         </q-card-section>
         <q-card-actions>
-            <q-btn>Show details</q-btn>
+            <q-btn @click="showDetails">Show details</q-btn>
         </q-card-actions>
     </q-card>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 const props = defineProps({
     job: {
         type: Object,
@@ -32,6 +33,14 @@ const props = defineProps({
     iconColor: {
         type: String,
         default: '#642b73'
+    },
+    role: {
+        type: String,
+        default: 'client'
+    },
+    type: {
+        type: String,
+        required: false
     }
 });
 
@@ -41,6 +50,15 @@ const icons = ref({
     location: 'fas fa-location-dot',
     contactInfo: 'fas fa-address-book'
 });
+
+const router = useRouter();
+const showDetails = () => {
+    if (props.role === 'service provider') {
+        router.push({ path: `/service-provider/job/${props.job.id}` });
+    } else if (props.role === 'client') {
+        router.push({ path: `/client/${props.type}/job/${props.job.id}` });
+    }
+};
 </script>
 
 <style scoped>

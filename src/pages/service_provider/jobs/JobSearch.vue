@@ -9,7 +9,7 @@
         </div>
         <div class="card-container">
             <div v-for="(job, index) in jobs" :key="index">
-                <jobCardComponent :job="job" />
+                <jobCardComponent :job="job" :role="userRole" />
             </div>
         </div>
     </div>
@@ -21,11 +21,11 @@ export default {
     components: {
         jobCardComponent
     },
-    props: [],
     data() {
         return {
             searchModel: null,
-            jobs: []
+            jobs: [],
+            userRole: null
         };
     },
     methods: {
@@ -40,10 +40,30 @@ export default {
                 .catch((error) => {
                     console.error('There was an error fetching user data!', error);
                 });
+        },
+        async fetchUserRole() {
+            debugger;
+            let role = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).role : null;
+            debugger;
+            if (!role) {
+                this.$api
+                    .get('/service-provider/role')
+                    .then((response) => {
+                        this.userRole = response.data.role;
+                    })
+                    .catch((error) => {
+                        console.error('Error while fetching user role:', error);
+                    });
+            } else {
+                this.userRole = role;
+            }
         }
     },
     mounted() {
         this.fetchDataForJobCard();
+    },
+    async created() {
+        await this.fetchUserRole();
     }
 };
 </script>
