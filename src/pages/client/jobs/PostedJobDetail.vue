@@ -384,7 +384,7 @@ export default {
 .job-details-card {
     width: 100%;
     max-width: 900px;
-    background-color: #f2f2f2;
+    background-color: #fff1fa;
     padding: 20px;
     box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.2);
 }

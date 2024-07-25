@@ -105,7 +105,7 @@ export default {
         async fetchJobs() {
             this.loading = true;
             await this.$api
-                .get('/client/jobs')
+                .get('/client/jobs/created')
                 .then((response) => {
                     console.log(this.postedJobs);
                     this.postedJobs = response.data.jobs;

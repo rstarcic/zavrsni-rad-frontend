@@ -329,7 +329,7 @@ export default {
 }
 
 .profile-card {
-    background-color: #ffffff !important;
+    background-color: #fff1fa !important;
     display: flex;
     flex-direction: column;
     align-items: center;

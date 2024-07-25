@@ -45,7 +45,7 @@ const props = defineProps({
 });
 
 const icons = ref({
-    category: 'fas fa-shapes',
+    category: 'fas fa-tag',
     hourlyRate: 'fas fa-coins',
     location: 'fas fa-location-dot',
     contactInfo: 'fas fa-address-book'

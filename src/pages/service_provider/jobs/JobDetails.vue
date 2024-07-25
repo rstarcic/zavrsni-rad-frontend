@@ -1,5 +1,8 @@
 <template>
     <div class="q-pa-md job-detail-card">
+        <div v-if="loading" class="spinner-container">
+            <q-spinner size="lg" color="white" :thickness="10" />
+        </div>
         <q-card class="card-style" v-if="job && client">
             <q-card-section class="text-center">
                 <div class="text-h5">{{ job.title }}</div>
@@ -158,16 +161,18 @@
 </template>
 
 <script>
+import { Notify } from 'quasar';
 import image from 'src/assets/profile-account-unknown.jpg';
 export default {
     data() {
         return {
             job: null,
             client: null,
-            defaultImage: image
+            defaultImage: image,
+            loading: false
         };
     },
-    mounted() {
+    async mounted() {
         this.fetchJobDetails();
     },
     computed: {
@@ -178,19 +183,48 @@ export default {
     methods: {
         async fetchJobDetails() {
             const jobId = this.$route.params.id;
+            this.loading = true;
             this.$api
-                .get(`/service-provider/job/${jobId}`)
+                .get(`/service-provider/jobs/${jobId}`)
                 .then((response) => {
                     this.job = response.data.job;
                     this.client = response.data.client;
-                    console.log('this.client', this.client);
-                    console.log('response.data.client', response.data.client);
+                    this.loading = false;
                 })
                 .catch((error) => {
                     console.error('There was an error fetching job details!', error);
                 });
         },
-        applyForJob(jobId) {
+        applyForJob() {
+            const jobId = this.$route.params.id;
+            this.$api
+                .post(`/service-provider/jobs/${jobId}/applications`)
+                .then((response) => {
+                    console.log('Job response: ', response.data);
+                    Notify.create({
+                        message: response.data.message,
+                        type: 'positive',
+                        position: 'bottom'
+                    });
+                })
+                .catch((error) => {
+                    if (error.response && error.response.data.message) {
+                        Notify.create({
+                            color: 'negative',
+                            position: 'bottom',
+                            message: error.response.data.message,
+                            icon: 'error'
+                        });
+                    } else {
+                        Notify.create({
+                            color: 'negative',
+                            position: 'bottom',
+                            message: 'Failed to apply to a job: ' + error.message,
+                            icon: 'error'
+                        });
+                    }
+                    console.error('There was an error applying to a job!', error);
+                });
             console.log(`Applying for job ${jobId}`);
         },
         navigateToClientProfile() {
@@ -208,7 +242,7 @@ export default {
 .card-style {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
+    background-color: #fff1fa;
 }
 .text-center {
     text-align: center;
@@ -225,5 +259,12 @@ export default {
 .apply-btn {
     background-color: #8462a5;
     color: white;
+}
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    width: 100%;
 }
 </style>
