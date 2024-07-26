@@ -42,9 +42,7 @@ export default {
                 });
         },
         async fetchUserRole() {
-            debugger;
             let role = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).role : null;
-            debugger;
             if (!role) {
                 this.$api
                     .get('/service-provider/role')

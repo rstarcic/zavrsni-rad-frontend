@@ -191,7 +191,6 @@ export default {
                 console.log('Loaded profile image from session storage', userData.profileImage);
             } else if (userId) {
                 try {
-                    debugger;
                     const response = await $api.get(`/service-provider/photo/${userId}`);
                     const userPhoto = response.data.encodedImage;
                     profileImage.value = userPhoto || defaultImage;

@@ -346,12 +346,10 @@ export default {
     },
     methods: {
         upload(e) {
-            debugger;
             const image = e.target.files[0];
             const reader = new FileReader();
             reader.readAsDataURL(image);
             reader.onload = (e) => {
-                debugger;
                 this.user.profileImage = e.target.result;
             };
         },
@@ -370,7 +368,6 @@ export default {
                 await this.$api
                     .patch(`/service-provider/profile`, userDataToUpdate)
                     .then((response) => {
-                        debugger;
                         console.log('Server response:', response);
                         sessionStorage.setItem('user', JSON.stringify(response.data.user) || {});
                         console.log('response.data.updatedUser', response.data.user.profileImage);
@@ -406,7 +403,6 @@ export default {
                 await this.$api
                     .get('/service-provider/data')
                     .then((response) => {
-                        debugger;
                         const userDataFetched = response.data;
                         this.user = userDataFetched.user || {};
                         this.skills = userDataFetched.user?.skills.length

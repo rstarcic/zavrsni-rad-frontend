@@ -240,12 +240,10 @@ export default {
     },
     methods: {
         upload(e) {
-            debugger;
             const image = e.target.files[0];
             const reader = new FileReader();
             reader.readAsDataURL(image);
             reader.onload = (e) => {
-                debugger;
                 this.user.profileImage = e.target.result;
             };
         },
@@ -256,7 +254,6 @@ export default {
                 await this.$api
                     .get('/client/data')
                     .then((response) => {
-                        debugger;
                         userData = response.data.userDataFetched;
                         sessionStorage.setItem('user', JSON.stringify(response.data.userDataFetched));
                         console.log('repsonse image:', response.data.userDataFetched.profileImage);
@@ -268,13 +265,11 @@ export default {
                         console.error('There was an error fetching user data!', error);
                     });
             } else if (userData) {
-                debugger;
                 this.user = { ...userData };
                 console.log('Session storage assigned', this.user);
             }
         },
         async saveProfileChanges() {
-            debugger;
             const userId = JSON.parse(sessionStorage.getItem('userId'));
             if (userId) {
                 const userDataToUpdate = {
@@ -284,7 +279,6 @@ export default {
                 await this.$api
                     .patch(`/client/profile`, userDataToUpdate)
                     .then((response) => {
-                        debugger;
                         console.log('repsonse image:', response.data.userDataUpdated.profileImage);
                         sessionStorage.setItem('user', JSON.stringify(response.data.userDataUpdated));
                         console.log('repsonse user:', response.data.userDataUpdated);

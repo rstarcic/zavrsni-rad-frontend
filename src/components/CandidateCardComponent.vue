@@ -23,7 +23,7 @@
                                 Generate contract
                             </q-tooltip>
                         </q-btn>
-                        <q-btn icon="fas fa-eye" size="md" color="yellow-8" dense>
+                        <q-btn icon="fas fa-eye" size="md" color="yellow-8" dense @click="goToServiceProviderProfile()">
                             <q-tooltip class="bg-yellow-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                                 View candidate profile
                             </q-tooltip>
@@ -48,6 +48,22 @@ export default {
         return {
             defaultImage: image
         };
+    },
+    methods: {
+        goToServiceProviderProfile() {
+            const jobId = this.$route.params.jobId;
+            if (jobId) {
+                this.$router.push({
+                    name: 'ServiceProviderProfileDetail',
+                    params: {
+                        jobId: jobId,
+                        candidateId: this.serviceProviderData.id
+                    }
+                });
+            } else {
+                console.error('User type is undefined or user not found');
+            }
+        }
     }
 };
 </script>

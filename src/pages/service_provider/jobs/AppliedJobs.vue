@@ -30,7 +30,6 @@ export default {
             await this.$api
                 .get('/service-provider/applications')
                 .then((response) => {
-                    debugger;
                     this.applications = response.data.applications;
                     console.log('Applications and job data fetched successfully:', response.data.applications);
                 })

@@ -44,15 +44,12 @@ export default {
                 });
         },
         async fetchUserRole() {
-            debugger;
             const role = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).role : null;
             const type = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).type : null;
-            debugger;
             if (!role) {
                 this.$api
                     .get('/client/role')
                     .then((response) => {
-                        debugger;
                         this.userRole = response.data.role;
                         this.userType = response.data.type;
                     })
@@ -69,7 +66,6 @@ export default {
         this.fetchDataForJobCard();
     },
     async created() {
-        debugger;
         await this.fetchUserRole();
     }
 };
