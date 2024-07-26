@@ -1,6 +1,16 @@
 <template>
     <div>
-        <candidate-card-component :serviceProviderData="candidateData"></candidate-card-component>
+        <div v-if="candidateData.length" class="candidate-container">
+            <candidate-card-component
+                v-for="candidate in candidateData"
+                :key="candidate.id"
+                :serviceProviderData="candidate"
+                class="candidate-card"
+            ></candidate-card-component>
+        </div>
+        <div class="alignment text-subtitle2" v-else>
+            <p>No candidates have applied for this job yet. Please check back later.</p>
+        </div>
     </div>
 </template>
 
@@ -12,23 +22,43 @@ export default {
     },
     data() {
         return {
-            candidateData: this.getCandidateData()
+            candidateData: []
         };
     },
     methods: {
-        getCandidateData() {
-            const user = JSON.parse(sessionStorage.getItem('user'));
-            return {
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                address: user.address,
-                city: user.city,
-                country: user.country,
-                phoneNumber: user.phoneNumber,
-                profileImage: user.profileImage
-            };
+        async fetchCandidateData() {
+            const jobId = this.$route.params.jobId;
+            console.log(jobId);
+            this.$api
+                .get(`/client/jobs/${jobId}/candidates`)
+                .then((response) => {
+                    console.log(response.data);
+                    this.candidateData = response.data.candidates;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         }
+    },
+    async mounted() {
+        await this.fetchCandidateData();
     }
 };
 </script>
+
+<style scoped>
+.candidate-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.alignment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+}
+</style>

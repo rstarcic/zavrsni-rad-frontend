@@ -2,7 +2,11 @@
     <div class="q-pa-md">
         <q-card class="my-card" flat bordered>
             <q-card-section class="row no-wrap">
-                <q-img class="col-4" :src="serviceProviderData.profileImage" style="width: 200px; height: 180px" />
+                <q-img
+                    class="col-4"
+                    :src="serviceProviderData.profileImage ? serviceProviderData.profileImage : defaultImage"
+                    style="width: 200px; height: 180px"
+                />
                 <div class="col">
                     <div class="q-px-md">
                         <div class="first-last-name-text">
@@ -32,12 +36,18 @@
 </template>
 
 <script>
+import image from 'src/assets/profile-account-unknown.jpg';
 export default {
     props: {
         serviceProviderData: {
             type: Object,
             required: true
         }
+    },
+    data() {
+        return {
+            defaultImage: image
+        };
     }
 };
 </script>
@@ -46,7 +56,7 @@ export default {
 .my-card {
     width: 400px;
     height: auto;
-    background-color: #f2f2f2;
+    background-color: #ffffff;
 }
 .q-img {
     width: 100%;

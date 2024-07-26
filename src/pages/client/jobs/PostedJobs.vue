@@ -1,9 +1,8 @@
 <template>
     <div class="q-pa-md alignment-wrapper">
         <div class="alignment-content">
-            <div class="header">
-                <div class="text-h4">All Jobs You Have Posted</div>
-                <div class="text-subtitle2">Review your posted jobs and manage candidate applications.</div>
+            <div v-if="!loading && postedJobs.length === 0" class="no-jobs text-subtitle2">
+                You haven't posted any jobs yet.
             </div>
 
             <div v-if="loading" class="q-mt-md">
@@ -11,63 +10,68 @@
             </div>
 
             <div v-else>
-                <div v-if="postedJobs.length === 0" class="text-h4">You haven't posted any jobs yet.</div>
+                <div v-if="postedJobs.length > 0">
+                    <div class="header">
+                        <div class="text-h4">All Jobs You Have Posted</div>
+                        <div class="text-subtitle2">Review your posted jobs and manage candidate applications.</div>
+                    </div>
 
-                <q-markup-table v-else separator="horizontal" flat bordered class="q-mt-md jobs-table">
-                    <thead>
-                        <tr>
-                            <th class="text-center larger-table-text">Title</th>
-                            <th class="text-center larger-table-text">Category</th>
-                            <th class="text-center larger-table-text">Created Date</th>
-                            <th class="text-center larger-table-text">Status</th>
-                            <th class="text-center larger-table-text">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="job in postedJobs" :key="job.id">
-                            <td class="text-center larger-table-text">{{ job.title }}</td>
-                            <td class="text-center larger-table-text">{{ job.category }}</td>
-                            <td class="text-center larger-table-text">{{ job.createdAt }}</td>
-                            <td class="text-center larger-table-text">
-                                <q-icon name="circle" :color="jobStatusColor(job.status)" size="xs" />
-                            </td>
-                            <td class="text-center button-group">
-                                <q-btn
-                                    size="sm"
-                                    icon="edit"
-                                    @click="viewDetails(job.id)"
-                                    color="cyan-9"
-                                    class="q-mx-sm"
-                                    padding="7px 10px"
-                                >
-                                    <q-tooltip
-                                        class="bg-cyan-9"
-                                        anchor="top middle"
-                                        self="bottom middle"
-                                        :offset="[10, 10]"
-                                        >View posted job details</q-tooltip
-                                    ></q-btn
-                                >
-                                <q-btn
-                                    size="sm"
-                                    icon="fas fa-users"
-                                    @click="viewCandidates(job.id)"
-                                    color="teal-4"
-                                    class="q-mx-sm"
-                                    padding="7px 10px"
-                                >
-                                    <q-tooltip
-                                        class="bg-teal-4"
-                                        anchor="top middle"
-                                        self="bottom middle"
-                                        :offset="[10, 10]"
-                                        >View your candidates</q-tooltip
-                                    ></q-btn
-                                >
-                            </td>
-                        </tr>
-                    </tbody>
-                </q-markup-table>
+                    <q-markup-table separator="horizontal" flat bordered class="q-mt-md jobs-table">
+                        <thead>
+                            <tr>
+                                <th class="text-center larger-table-text">Title</th>
+                                <th class="text-center larger-table-text">Category</th>
+                                <th class="text-center larger-table-text">Created Date</th>
+                                <th class="text-center larger-table-text">Status</th>
+                                <th class="text-center larger-table-text">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="job in postedJobs" :key="job.id">
+                                <td class="text-center larger-table-text">{{ job.title }}</td>
+                                <td class="text-center larger-table-text">{{ job.category }}</td>
+                                <td class="text-center larger-table-text">{{ job.createdAt }}</td>
+                                <td class="text-center larger-table-text">
+                                    <q-icon name="circle" :color="jobStatusColor(job.status)" size="xs" />
+                                </td>
+                                <td class="text-center button-group">
+                                    <q-btn
+                                        size="sm"
+                                        icon="edit"
+                                        @click="viewDetails(job.id)"
+                                        color="cyan-9"
+                                        class="q-mx-sm"
+                                        padding="7px 10px"
+                                    >
+                                        <q-tooltip
+                                            class="bg-cyan-9"
+                                            anchor="top middle"
+                                            self="bottom middle"
+                                            :offset="[10, 10]"
+                                            >View posted job details</q-tooltip
+                                        ></q-btn
+                                    >
+                                    <q-btn
+                                        size="sm"
+                                        icon="fas fa-users"
+                                        @click="viewCandidates(job.id)"
+                                        color="teal-4"
+                                        class="q-mx-sm"
+                                        padding="7px 10px"
+                                    >
+                                        <q-tooltip
+                                            class="bg-teal-4"
+                                            anchor="top middle"
+                                            self="bottom middle"
+                                            :offset="[10, 10]"
+                                            >View your candidates</q-tooltip
+                                        ></q-btn
+                                    >
+                                </td>
+                            </tr>
+                        </tbody>
+                    </q-markup-table>
+                </div>
             </div>
         </div>
     </div>
@@ -87,7 +91,7 @@ export default {
             let user = JSON.parse(sessionStorage.getItem('user'));
             if (user && user.type) {
                 console.log('View details for job:', jobId);
-                this.$router.push(`/client/${user.type}/posted-jobs/details/${jobId}`);
+                this.$router.push(`/client/${user.type}/posted-jobs/${jobId}/details`);
             } else {
                 console.error('User type is undefined or user not found');
             }
@@ -96,7 +100,7 @@ export default {
             let user = JSON.parse(sessionStorage.getItem('user'));
             if (user && user.type) {
                 console.log('View candidates for job:', jobId);
-                this.$router.push(`/client/${user.type}/posted-jobs/candidates/${jobId}`);
+                this.$router.push(`/client/${user.type}/posted-jobs/${jobId}/candidates`);
             } else {
                 console.error('User type is undefined or user not found');
             }
@@ -139,7 +143,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 70vh;
+    height: 50vh;
     padding: 20px;
 }
 
@@ -152,8 +156,8 @@ export default {
     margin-bottom: 20px;
 }
 
-.no-jobs-card {
-    margin-top: 20px;
+.no-jobs {
+    margin-top: 200px;
 }
 
 .jobs-table {

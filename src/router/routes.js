@@ -67,13 +67,13 @@ const routes = [
                 meta: { requiresRole: 'client' }
             },
             {
-                path: 'posted-jobs/details/:jobId',
+                path: 'posted-jobs/:jobId/details',
                 component: () => import('src/pages/client/jobs/PostedJobDetail.vue'),
                 props: true,
                 meta: { requiresRole: 'client' }
             },
             {
-                path: 'posted-jobs/candidates/:jobId',
+                path: 'posted-jobs/:jobId/candidates',
                 component: () => import('src/pages/client/service_provider_profile/ServiceProviderProfileSummary.vue'),
                 props: true,
                 meta: { requiresRole: 'client' }
