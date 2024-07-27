@@ -87,7 +87,7 @@ const icons = ref({
 
 const router = useRouter();
 const showDetails = () => {
-    router.push({ path: `/service-provider/job/${props.job.id}` });
+    router.push({ path: `/service-provider/jobs/${props.job.id}` });
 };
 </script>
 

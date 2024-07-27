@@ -481,7 +481,7 @@ export default {
     cursor: pointer;
     position: absolute;
     top: 75%;
-    right: 34%;
+    right: 39%;
     transform: translateY(-50%);
 }
 </style>

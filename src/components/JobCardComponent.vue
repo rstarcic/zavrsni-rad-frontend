@@ -54,9 +54,9 @@ const icons = ref({
 const router = useRouter();
 const showDetails = () => {
     if (props.role === 'service provider') {
-        router.push({ path: `/service-provider/job/${props.job.id}` });
+        router.push({ path: `/service-provider/jobs/${props.job.id}` });
     } else if (props.role === 'client') {
-        router.push({ path: `/client/${props.type}/job/${props.job.id}` });
+        router.push({ path: `/client/${props.type}/jobs/${props.job.id}` });
     }
 };
 </script>

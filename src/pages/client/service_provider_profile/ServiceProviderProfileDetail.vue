@@ -2,7 +2,7 @@
     <q-page class="q-pa-xl">
         <q-card class="profile-card">
             <div class="full-width column items-center profile-container">
-                <q-avatar class="q-ma-md" size="170px" font-size="52px">
+                <q-avatar class="q-ma-md" size="150px" font-size="52px">
                     <template v-if="user.profileImage">
                         <img :src="user.profileImage" />
                     </template>
@@ -13,16 +13,16 @@
             </div>
             <q-card-section>
                 <div class="q-pa-md example-row-equal-width">
-                    <div class="text-h6 q-mx-xl q-my-md text-align">About Me</div>
-                    <q-card flat bordered class="col-12 col-md-5 q-mx-md q-my-sm">
+                    <div class="section-title" v-if="user.aboutMeSummary">About Me</div>
+                    <q-card flat bordered class="col-12 q-my-sm" v-if="user.aboutMeSummary">
                         <q-card-section class="q-pa-md">
                             <div v-html="user.aboutMeSummary" class="text-subtitle1"></div>
                         </q-card-section>
                     </q-card>
 
-                    <div class="text-h6 q-mx-xl q-my-md text-align">Personal Information</div>
+                    <div class="section-title">Personal Information</div>
                     <div class="row justify-center q-gutter-sm">
-                        <q-card flat bordered class="col-8 q-pa-md">
+                        <q-card flat bordered class="col-12 q-pa-md">
                             <div class="row">
                                 <div class="col-12 col-md-6 q-mb-md">
                                     <q-icon name="account_circle" class="q-mr-sm" />
@@ -50,9 +50,9 @@
                         </q-card>
                     </div>
 
-                    <div class="text-h6 q-mx-xl q-my-md text-align">Contact Information</div>
+                    <div class="section-title">Contact Information</div>
                     <div class="row justify-center q-gutter-sm">
-                        <q-card flat bordered class="col-9 q-pa-md">
+                        <q-card flat bordered class="col-12 q-pa-md">
                             <div class="row">
                                 <div class="col-12 col-md-6 q-mb-md">
                                     <q-icon name="email" class="q-mr-sm" />
@@ -91,9 +91,10 @@
                             </div>
                         </q-card>
                     </div>
-                    <div class="text-h6 q-mx-xl q-my-md text-align">Documents</div>
+
+                    <div class="section-title">Documents</div>
                     <div class="row justify-center q-gutter-sm">
-                        <q-card flat bordered class="col-10 q-pa-md">
+                        <q-card flat bordered class="col-12 q-pa-md">
                             <div class="row">
                                 <div class="col-12 col-md-6 q-mb-md">
                                     <q-icon name="description" class="q-mr-sm" />
@@ -108,59 +109,73 @@
                             </div>
                         </q-card>
                     </div>
-                    <div class="text-h6 q-mx-xl q-my-md text-align">Present or Most Recent Education</div>
-                    <div class="row justify-center q-gutter-sm">
-                        <q-card flat bordered class="col-12 col-md-6 q-pa-md">
-                            <div class="q-mb-md">
-                                <q-icon name="school" class="q-mr-sm" />
-                                <strong>Institution:</strong>
-                                <span>{{ education.institution }}</span>
-                            </div>
-                            <div class="q-mb-md">
-                                <q-icon name="local_library" class="q-mr-sm" />
-                                <strong>Degree:</strong>
-                                <span>{{ education.degree }}</span>
-                            </div>
-                            <div class="q-mb-md">
-                                <q-icon name="event" class="q-mr-sm" />
-                                <strong>Start Date:</strong>
-                                <span>{{ education.startDate }}</span>
-                            </div>
-                            <div>
-                                <q-icon name="date_range" class="q-mr-sm" />
-                                <strong> End Date: </strong>
-                                <span> {{ education.endDate }} </span>
+
+                    <div class="section-title" v-if="education.institution && education.degree">
+                        Present or Most Recent Education
+                    </div>
+                    <div class="row q-gutter-sm" v-if="education.institution && education.degree">
+                        <q-card flat bordered class="col-12 q-pa-md">
+                            <div class="row">
+                                <div class="col-12 col-md-6 q-mb-md">
+                                    <q-icon name="school" class="q-mr-sm" />
+                                    <strong> Institution: </strong>
+                                    <span> {{ education.institution }} </span>
+                                </div>
+                                <div class="col-12 col-md-6 q-mb-md">
+                                    <q-icon name="local_library" class="q-mr-sm" />
+                                    <strong> Degree: </strong>
+                                    <span> {{ education.degree }} </span>
+                                </div>
+                                <div class="col-12 col-md-6 q-mb-md">
+                                    <q-icon name="event" class="q-mr-sm" />
+                                    <strong> Start Date: </strong>
+                                    <span> {{ education.startDate }} </span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <q-icon name="date_range" class="q-mr-sm" />
+                                    <strong> End Date: </strong>
+                                    <span> {{ education.endDate }} </span>
+                                </div>
                             </div>
                         </q-card>
                     </div>
 
-                    <div class="text-h6 q-mx-xl q-my-md text-align">Present or Most Recent Work Experience</div>
-                    <div class="row justify-center q-gutter-sm">
-                        <q-card flat bordered class="col-12 col-md-6 q-pa-md">
-                            <div class="q-mb-md">
-                                <q-icon name="business" class="q-mr-sm" />
-                                <strong> Company Name: </strong>
-                                <span> {{ workExperience.companyName }} </span>
-                            </div>
-                            <div class="q-mb-md">
-                                <q-icon name="assignment_ind" class="q-mr-sm" />
-                                <strong> Job Title: </strong>
-                                <span> {{ workExperience.jobTitle }} </span>
-                            </div>
-                            <div class="q-mb-md">
-                                <q-icon name="date_range" class="q-mr-sm" />
-                                <strong> Start Date: </strong>
-                                <span> {{ workExperience.startDate }} </span>
-                            </div>
-                            <div>
-                                <q-icon name="date_range" class="q-mr-sm" />
-                                <strong> End Date: </strong>
-                                <span> {{ workExperience.endDate }} </span>
+                    <div class="section-title" v-if="workExperience.companyName">
+                        Present or Most Recent Work Experience
+                    </div>
+                    <div class="row q-gutter-sm" v-if="workExperience.companyName">
+                        <q-card flat bordered class="col-12 q-pa-md">
+                            <div class="row">
+                                <div class="col-12 col-md-6 q-mb-md">
+                                    <q-icon name="business" class="q-mr-sm" />
+                                    <strong> Company Name: </strong>
+                                    <span> {{ workExperience.companyName }} </span>
+                                </div>
+                                <div class="col-12 col-md-6 q-mb-md">
+                                    <q-icon name="assignment_ind" class="q-mr-sm" />
+                                    <strong> Job Title: </strong>
+                                    <span> {{ workExperience.jobTitle }} </span>
+                                </div>
+                                <div class="col-12 col-md-6 q-mb-md">
+                                    <q-icon name="date_range" class="q-mr-sm" />
+                                    <strong> Start Date: </strong>
+                                    <span> {{ workExperience.startDate }} </span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <q-icon name="date_range" class="q-mr-sm" />
+                                    <strong> End Date: </strong>
+                                    <span> {{ workExperience.endDate }} </span>
+                                </div>
                             </div>
                         </q-card>
                     </div>
-                    <div class="text-h6 q-mx-xl q-my-md text-align">Languages</div>
-                    <div class="row justify-center q-gutter-sm">
+                    <div class="section-title" v-if="languages.length && languages.some((lang) => lang.language)">
+                        Languages
+                    </div>
+                    <div
+                        class="row justify-center q-gutter-sm"
+                        v-if="languages.length && languages.some((lang) => lang.language)"
+                    >
                         <div
                             v-for="(language, index) in languages"
                             :key="'language' + index"
@@ -181,10 +196,13 @@
                         </div>
                     </div>
 
-                    <div class="text-h6 q-mx-xl q-my-md text-align">Skills</div>
-                    <div class="row justify-center q-gutter-sm">
+                    <div class="section-title" v-if="skills.length && skills.some((skill) => skill.name)">Skills</div>
+                    <div
+                        class="row justify-center q-gutter-sm"
+                        v-if="skills.length && skills.some((skill) => skill.name)"
+                    >
                         <div v-for="(skill, index) in skills" :key="index" class="q-ma-md">
-                            <q-chip v-if="skill.name" color="purple-7" text-color="white" class="q-ma-sm" icon="circle">
+                            <q-chip color="purple-7" text-color="white" class="q-ma-sm" icon="circle">
                                 {{ skill.name }}
                             </q-chip>
                         </div>
@@ -196,7 +214,6 @@
 </template>
 
 <script>
-import { Notify } from 'quasar';
 import configuration from 'src/configuration.js';
 import utils from 'src/utils';
 import image from 'src/assets/profile-account-unknown.jpg';
@@ -240,11 +257,8 @@ export default {
                 startDate: null,
                 endDate: null
             },
-            languages: [
-                { language: null, proficiency: null },
-                { language: null, proficiency: null }
-            ],
-            skills: [{ name: '' }, { name: '' }, { name: '' }],
+            languages: [],
+            skills: [],
             defaultImage: image,
             documentTypes: configuration.documentTypes,
             proficiencyLevels: configuration.proficiencyLevels,
@@ -260,17 +274,10 @@ export default {
                     const data = response.data;
                     console.log('Service provider profile data', response.data);
                     this.user = data.user;
-                    this.skills = data.user?.skills.length
-                        ? data.user.skills
-                        : [{ name: '' }, { name: '' }, { name: '' }];
+                    this.skills = data.user?.skills.length ? data.user.skills : [];
                     this.education = data.education || {};
                     this.workExperience = data.workExperience || {};
-                    this.languages = data.languages.length
-                        ? data.languages
-                        : [
-                              { language: '', proficiency: '' },
-                              { language: '', proficiency: '' }
-                          ];
+                    this.languages = data.languages.length ? data.languages : [];
                 })
                 .catch((error) => {
                     console.error('There was an error fetching user data!', error);
@@ -289,22 +296,38 @@ export default {
     margin: auto;
 }
 
-.save-profile-btn-container {
-    display: flex;
-    justify-content: center;
-}
-
-.save-profile-btn {
-    margin: 20px;
-    background-color: #8e68b2;
-    color: #f2f2f2;
-}
-
 .profile-container {
+    height: 180px;
     position: relative;
+    background-color: purple;
 }
 
-.text-align {
-    margin-left: 100px;
+.section-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    text-align: left;
+    margin-left: 30px;
+    color: purple;
+}
+
+.q-card {
+    margin-bottom: 1rem;
+}
+
+.q-pa-md {
+    padding: 1.5rem;
+}
+
+.q-card-section {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.q-mb-md {
+    flex: 1 1 auto;
+    min-width: 300px;
 }
 </style>

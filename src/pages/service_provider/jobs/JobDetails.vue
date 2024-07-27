@@ -135,8 +135,9 @@
                         </q-item-section>
                     </q-item>
                     <q-item>
-                        <q-item-section avatar>
+                        <q-item-section avatar class="cursor-pointer" style="border-radius: 50%">
                             <q-avatar @click="navigateToClientProfile()">
+                                <q-tooltip class="bg-purple-7"> View Client Profile </q-tooltip>
                                 <img :src="client.profileImage ? client.profileImage : defaultImage" />
                             </q-avatar>
                         </q-item-section>
@@ -164,6 +165,16 @@
 import { Notify } from 'quasar';
 import image from 'src/assets/profile-account-unknown.jpg';
 export default {
+    props: {
+        id: {
+            type: String,
+            required: false
+        },
+        role: {
+            type: String,
+            default: 'service provider'
+        }
+    },
     data() {
         return {
             job: null,
@@ -182,10 +193,9 @@ export default {
     },
     methods: {
         async fetchJobDetails() {
-            const jobId = this.$route.params.id;
             this.loading = true;
             this.$api
-                .get(`/service-provider/jobs/${jobId}`)
+                .get(`/service-provider/jobs/${this.id}`)
                 .then((response) => {
                     this.job = response.data.job;
                     this.client = response.data.client;
@@ -228,7 +238,10 @@ export default {
             console.log(`Applying for job ${jobId}`);
         },
         navigateToClientProfile() {
-            //this.$router.push({ name: 'ClientProfile', params: { id: this.client.id } });
+            this.$router.push({
+                name: 'ClientProfileDetail',
+                params: { clientId: this.client.id }
+            });
         }
     }
 };
@@ -266,5 +279,12 @@ export default {
     align-items: center;
     height: 70vh;
     width: 100%;
+}
+.q-avatar {
+    cursor: pointer;
+}
+.cursor-pointer:hover {
+    transform: scale(1.1);
+    transition: transform 0.4s ease;
 }
 </style>

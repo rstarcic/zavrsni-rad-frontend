@@ -1,15 +1,20 @@
 <template>
     <div>
-        <div v-if="candidateData.length" class="candidate-container">
-            <candidate-card-component
-                v-for="candidate in candidateData"
-                :key="candidate.id"
-                :serviceProviderData="candidate"
-                class="candidate-card"
-            ></candidate-card-component>
+        <div v-if="loading" class="spinner-container">
+            <q-spinner size="lg" color="white" :thickness="10" />
         </div>
-        <div class="alignment text-subtitle2" v-else>
-            <p>No candidates have applied for this job yet. Please check back later.</p>
+        <div v-else>
+            <div v-if="candidateData.length" class="candidate-container">
+                <candidate-card-component
+                    v-for="candidate in candidateData"
+                    :key="candidate.id"
+                    :serviceProviderData="candidate"
+                    class="candidate-card"
+                ></candidate-card-component>
+            </div>
+            <div class="alignment text-subtitle2" v-else>
+                <p>No candidates have applied for this job yet. Please check back later.</p>
+            </div>
         </div>
     </div>
 </template>
@@ -22,13 +27,15 @@ export default {
     },
     data() {
         return {
-            candidateData: []
+            candidateData: [],
+            loading: false
         };
     },
     methods: {
         async fetchCandidateData() {
             const jobId = this.$route.params.jobId;
             console.log(jobId);
+            this.loading = true;
             this.$api
                 .get(`/client/jobs/${jobId}/candidates`)
                 .then((response) => {
@@ -37,11 +44,14 @@ export default {
                 })
                 .catch((error) => {
                     console.log(error);
+                })
+                .finally(() => {
+                    this.loading = false;
                 });
         }
     },
-    async mounted() {
-        await this.fetchCandidateData();
+    mounted() {
+        this.fetchCandidateData();
     }
 };
 </script>
@@ -60,5 +70,13 @@ export default {
     align-items: center;
     justify-content: center;
     height: 80vh;
+}
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    width: 100%;
 }
 </style>

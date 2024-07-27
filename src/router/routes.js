@@ -46,12 +46,19 @@ const routes = [
                 meta: { requiresRole: 'client' }
             },
             {
-                path: 'job/:id',
+                path: 'jobs/:id',
                 component: () => import('src/pages/client/jobs/JobDetails.vue'),
                 props: (route) => ({
                     id: route.params.id,
                     role: 'client'
                 }),
+                meta: { requiresRole: 'client' }
+            },
+            {
+                path: 'jobs/:id/client/:clientId',
+                name: 'OtherClientProfileDetail',
+                component: () => import('src/pages/client/other_client_profile/ClientProfileDetail.vue'),
+                props: true,
                 meta: { requiresRole: 'client' }
             },
             {
@@ -97,12 +104,19 @@ const routes = [
                 meta: { requiresRole: 'service provider' }
             },
             {
-                path: 'job/:id',
+                path: 'jobs/:id',
                 component: () => import('src/pages/service_provider/jobs/JobDetails.vue'),
                 props: (route) => ({
                     id: route.params.id,
                     role: 'service provider'
                 }),
+                meta: { requiresRole: 'service provider' }
+            },
+            {
+                path: 'jobs/:id/client/:clientId',
+                name: 'ClientProfileDetail',
+                component: () => import('src/pages/service_provider/client_profile/ClientProfileDetail.vue'),
+                props: true,
                 meta: { requiresRole: 'service provider' }
             },
             {

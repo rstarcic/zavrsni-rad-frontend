@@ -132,6 +132,10 @@
 import image from 'src/assets/profile-account-unknown.jpg';
 export default {
     props: {
+        id: {
+            type: String,
+            required: false
+        },
         clientId: {
             type: String,
             required: true
@@ -151,7 +155,7 @@ export default {
         async fetchClientDetails() {
             this.loading = true;
             this.$api
-                .get(`/service-provider/client/${this.clientId}`)
+                .get(`/client/client-profile/${this.clientId}`)
                 .then((response) => {
                     this.loading = false;
                     this.client = response.data.user;
