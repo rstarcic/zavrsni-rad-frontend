@@ -55,7 +55,7 @@ export default {
     methods: {
         async fetchDataForHomePage() {
             await this.$api
-                .get('/jobs/summary', { params: { limit: 9 } })
+                .get('/jobs/home', { params: { limit: 9 } })
                 .then((response) => {
                     this.jobs = response.data.jobs;
                     console.log('Jobs ', this.jobs);
