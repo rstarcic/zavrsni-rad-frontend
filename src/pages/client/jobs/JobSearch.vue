@@ -2,24 +2,27 @@
     <div class="alignment">
         <div class="filters-container">
             <div class="row search">
-                <q-input rounded outlined dark color="yellow-5" v-model="searchModel" class="searchBar">
+                <q-input rounded outlined dark color="grey-9" v-model="searchModel" class="searchBar">
                     <template v-slot:append>
-                        <q-icon name="search" @click="searchJobs" />
+                        <q-icon name="search" @click="searchJobs" class="search-icon" />
                     </template>
                 </q-input>
             </div>
             <div class="selected-filters">
                 <q-chip
+                    color="teal-4"
+                    text-color="white"
                     v-for="(filter, index) in selectedFilters"
                     :key="index"
                     removable
                     @remove="removeFilter(filter)"
+                    class="chip-truncate"
                 >
                     {{ filter.label }}: {{ filter.value }}
                 </q-chip>
             </div>
             <div class="filters">
-                <q-btn-dropdown color="pink" label="Title">
+                <q-btn-dropdown label="Title" class="dropdown-btn" icon="label">
                     <q-list>
                         <q-item
                             v-for="(option, index) in availableTitles"
@@ -35,7 +38,7 @@
                     </q-list>
                 </q-btn-dropdown>
 
-                <q-btn-dropdown color="pink" label="Category">
+                <q-btn-dropdown label="Category" class="dropdown-btn" icon="fas fa-tag">
                     <q-list>
                         <q-item
                             v-for="(option, index) in availableCategories"
@@ -51,7 +54,7 @@
                     </q-list>
                 </q-btn-dropdown>
 
-                <q-btn-dropdown color="pink" label="Location">
+                <q-btn-dropdown label="Location" class="dropdown-btn" icon="fas fa-location-dot">
                     <q-list>
                         <q-item
                             v-for="(option, index) in availableLocations"
@@ -67,7 +70,9 @@
                     </q-list>
                 </q-btn-dropdown>
                 <div class="range-container">
-                    <q-icon color="secondary" name="fas fa-coins" />
+                    <q-icon color="teal-9" name="fas fa-coins">
+                        <q-tooltip class="bg-teal-4" :offset="[10, 10]"> Hourly rate </q-tooltip></q-icon
+                    >
 
                     <q-range
                         v-model="filters.hourlyRate"
@@ -77,7 +82,7 @@
                         :inner-min-value="filters.hourlyRate.min"
                         :inner-max-value="filters.hourlyRate.max"
                         label-always
-                        color="light-green"
+                        color="teal-5"
                     />
                 </div>
             </div>
@@ -305,5 +310,14 @@ export default {
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
+}
+
+.dropdown-btn {
+    background-color: #e6e6fa;
+}
+
+.search-icon:hover {
+    transform: scale(1.1);
+    transition: transform 0.4s ease;
 }
 </style>
