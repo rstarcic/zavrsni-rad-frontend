@@ -20,7 +20,8 @@
     "quasar": "^2.8.0",
     "url": "^0.11.3",
     "vue": "^3.4.18",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.12",
+    "vue-signature": "^2.6.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",

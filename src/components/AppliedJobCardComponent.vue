@@ -43,9 +43,15 @@
         <q-separator inset />
 
         <q-card-actions align="center">
-            <q-btn icon="fas fa-file-contract" size="md" color="grey-9" dense>
-                <q-tooltip class="bg-grey-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                    Sign contract
+            <q-btn
+                :icon="'fas fa-file-contract'"
+                :size="'md'"
+                :color="buttonConfig.color"
+                :disabled="buttonConfig.disabled"
+                :dense="true"
+            >
+                <q-tooltip class="bg-grey-7" :anchor="'top middle'" :self="'bottom middle'" :offset="[10, 10]">
+                    {{ buttonConfig.tooltip }}
                 </q-tooltip>
             </q-btn>
             <q-btn icon="fas fa-eye" size="md" color="grey-9" dense @click="showDetails">
@@ -58,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const props = defineProps({
@@ -89,6 +95,29 @@ const router = useRouter();
 const showDetails = () => {
     router.push({ path: `/service-provider/jobs/${props.job.id}` });
 };
+
+const buttonConfig = computed(() => {
+    const status = props.application.applicationStatus;
+    if (status === 'selected') {
+        return {
+            color: 'green',
+            tooltip: 'Sign the contract for your selected job',
+            disabled: false
+        };
+    } else if (status === 'rejected') {
+        return {
+            color: 'yellow',
+            tooltip: 'You have been rejected for this job',
+            disabled: true
+        };
+    } else {
+        return {
+            color: 'black',
+            tooltip: 'Waiting for client decision',
+            disabled: true
+        };
+    }
+});
 </script>
 
 <style scoped>
