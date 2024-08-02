@@ -49,24 +49,51 @@
                 :color="buttonConfig.color"
                 :disabled="buttonConfig.disabled"
                 :dense="true"
+                @click="showDialog = true"
             >
                 <q-tooltip class="bg-grey-7" :anchor="'top middle'" :self="'bottom middle'" :offset="[10, 10]">
                     {{ buttonConfig.tooltip }}
                 </q-tooltip>
             </q-btn>
+            <q-dialog v-model="showDialog" persistent>
+                <q-card class="q-card">
+                    <q-card-section class="q-card-section-title">
+                        <div class="row items-center justify-between">
+                            <div class="col">
+                                <h6 class="text-center title">Sign contract</h6>
+                            </div>
+                            <div class="col-auto">
+                                <q-btn icon="close" flat round dense @click="showDialog = false"></q-btn>
+                            </div>
+                        </div>
+                    </q-card-section>
+                    <q-card-section class="q-card-section">
+                        <div class="signature-container">
+                            <vue-signature ref="signature" :sigOption="option" :w="'100%'" :h="'200px'"></vue-signature>
+                        </div>
+                    </q-card-section>
+                    <q-card-actions align="center">
+                        <q-btn icon="description" label="Generate" color="primary" @click="save"></q-btn>
+                        <q-btn size="md" icon="clear" label="Clear" color="primary" @click="clear"></q-btn>
+                        <q-btn icon="undo" label="Undo" color="primary" @click="undo"></q-btn>
+                    </q-card-actions>
+                </q-card>
+            </q-dialog>
             <q-btn icon="fas fa-eye" size="md" color="grey-9" dense @click="showDetails">
                 <q-tooltip class="bg-grey-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     Show job details you've applied to
                 </q-tooltip>
             </q-btn>
+            <q-btn @click="fetchContract"> download </q-btn>
         </q-card-actions>
     </q-card>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
-
+import { computed, ref, inject, defineComponent } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { Notify } from 'quasar';
+import VueSignature from 'vue-signature';
 const props = defineProps({
     job: {
         type: Object,
@@ -90,8 +117,17 @@ const icons = ref({
     jobStatus: 'fas fa-briefcase',
     appliedAt: 'fas fa-calendar-alt'
 });
+const option = {
+    penColor: 'rgb(0, 0, 0)',
+    backgroundColor: 'rgb(255, 255, 255)'
+};
 
 const router = useRouter();
+const route = useRoute();
+const $api = inject('$api');
+const showDialog = ref(false);
+const signature = ref(null);
+
 const showDetails = () => {
     router.push({ path: `/service-provider/jobs/${props.job.id}` });
 };
@@ -118,6 +154,79 @@ const buttonConfig = computed(() => {
         };
     }
 });
+const fetchContract = async () => {
+    try {
+        const response = await $api.get(`/service-provider/jobs/${props.job.id}/generate`, {
+            responseType: 'blob'
+        });
+        console.log(response);
+        if (response.status === 200) {
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = 'contract.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+        } else {
+            Notify.create({
+                type: 'negative',
+                message: 'Failed to download contract'
+            });
+        }
+    } catch (error) {
+        console.error('Error downloading contract:', error);
+        Notify.create({
+            type: 'negative',
+            message: 'Error downloading contract'
+        });
+    }
+};
+const save = async () => {
+    debugger;
+    const dataURL = signature.value.save();
+    console.log('props.client', props.client.id);
+    try {
+        const response = await $api.post(
+            `/service-provider/jobs/${props.job.id}/client/${props.client.id}/generate`,
+            {
+                signature: dataURL
+            },
+            {
+                responseType: 'blob'
+            }
+        );
+        console.log(response);
+        debugger;
+        const downloadUrl = window.URL.createObjectURL(response.data);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'contract.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+        console.error('Error saving signature and generating contract:', error);
+        Notify.create({
+            type: 'negative',
+            message: 'An error occurred while generating or downloading the contract.'
+        });
+    }
+};
+const clear = () => {
+    signature.value.clear();
+};
+
+const undo = () => {
+    if (signature.value) {
+        signature.value.undo();
+    } else {
+        console.error('Signature pad not found');
+    }
+};
 </script>
 
 <style scoped>
@@ -151,8 +260,28 @@ const buttonConfig = computed(() => {
 .q-btn {
     padding: 5px 12px;
 }
+
 .my-separator {
     margin-top: 16px;
     margin-bottom: 16px;
+}
+
+.title {
+    margin: 0;
+    font-size: 16px;
+}
+
+.q-card-section-title {
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    padding: 5px;
+}
+
+.signature-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    padding: 20px;
 }
 </style>

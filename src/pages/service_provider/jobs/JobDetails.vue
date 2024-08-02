@@ -155,9 +155,38 @@
             </q-card-section>
 
             <q-card-actions class="justify-center align-center">
-                <q-btn class="apply-btn" size="md" flat @click="applyForJob(job.id)"> Apply </q-btn>
+                <q-btn class="apply-btn" size="md" flat @click="handleApplyClick()"> Apply </q-btn>
             </q-card-actions>
         </q-card>
+        <q-dialog v-model="showIbanDialog">
+            <q-card class="dialog-card">
+                <q-card-section class="dialog-header">
+                    <div class="text-h6">Enter Bank Details</div>
+                    <div class="text-subtitle2 dialog-subtitle">
+                        These details are required for payment processing and contract generation.
+                    </div>
+                </q-card-section>
+
+                <q-card-section class="dialog-content">
+                    <q-input
+                        v-model="iban"
+                        label="IBAN"
+                        color="grey-8"
+                        outlined
+                        class="dialog-input"
+                        mask="SS## #### #### #### #### ####"
+                        fill-mask
+                        hint="ex. HR12 3456 7890 1234 5678 9012"
+                    />
+                    <q-input v-model="bankName" label="Bank Name" color="grey-8" outlined class="dialog-input" />
+                </q-card-section>
+
+                <q-card-actions align="right" class="dialog-actions">
+                    <q-btn flat label="Cancel" color="negative" v-close-popup />
+                    <q-btn flat label="Submit" color="primary" @click="submitBankDetails" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
@@ -180,11 +209,16 @@ export default {
             job: null,
             client: null,
             defaultImage: image,
-            loading: false
+            loading: false,
+            iban: null,
+            bankName: null,
+            userHasBankDetails: false,
+            showIbanDialog: false
         };
     },
     async mounted() {
         this.fetchJobDetails();
+        await this.checkUserBankDetails();
     },
     computed: {
         statusColor() {
@@ -194,6 +228,7 @@ export default {
     methods: {
         async fetchJobDetails() {
             this.loading = true;
+            console.log(`/service-provider/jobs/${this.id}`);
             this.$api
                 .get(`/service-provider/jobs/${this.id}`)
                 .then((response) => {
@@ -220,7 +255,7 @@ export default {
                 .catch((error) => {
                     if (error.response && error.response.data.message) {
                         Notify.create({
-                            color: 'negative',
+                            color: 'warning',
                             position: 'bottom',
                             message: error.response.data.message,
                             icon: 'error'
@@ -236,6 +271,57 @@ export default {
                     console.error('There was an error applying to a job!', error);
                 });
             console.log(`Applying for job ${jobId}`);
+        },
+        async checkUserBankDetails() {
+            try {
+                debugger;
+                const response = await this.$api.get('/service-provider/jobs/bank-details');
+                this.userHasBankDetails = response.data.hasBankDetails;
+                console.log(response.data.hasBankDetails);
+            } catch (error) {
+                console.error('There was an error checking bank details!', error);
+            }
+        },
+        handleApplyClick() {
+            if (this.userHasBankDetails) {
+                this.applyForJob();
+            } else {
+                this.showIbanDialog = true;
+            }
+        },
+        async submitBankDetails() {
+            if (!this.validateInputs()) {
+                return;
+            }
+            try {
+                const response = await this.$api.patch('/service-provider/jobs/bank-details', {
+                    iban: this.iban,
+                    bankName: this.bankName
+                });
+                this.userHasBankDetails = response.data.successfulUpdate;
+                this.showIbanDialog = false;
+                this.applyForJob();
+            } catch (error) {
+                Notify.create({
+                    color: 'negative',
+                    position: 'bottom',
+                    message: 'Failed to update bank details: ' + error.message,
+                    icon: 'error'
+                });
+                console.error('There was an error updating bank details!', error);
+            }
+        },
+        validateInputs() {
+            if (!this.iban || !this.bankName) {
+                Notify.create({
+                    color: 'negative',
+                    position: 'bottom',
+                    message: 'Please provide your IBAN and bank name before applying.',
+                    icon: 'error'
+                });
+                return false;
+            }
+            return true;
         },
         navigateToClientProfile() {
             this.$router.push({
@@ -286,5 +372,40 @@ export default {
 .cursor-pointer:hover {
     transform: scale(1.1);
     transition: transform 0.4s ease;
+}
+
+.dialog-card {
+    max-width: 350px;
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-header {
+    background-color: #f5f5f5;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+.dialog-subtitle {
+    margin-top: 8px;
+    color: #757575;
+}
+
+.dialog-content {
+    padding: 16px;
+}
+
+.dialog-input {
+    margin-bottom: 16px;
+}
+
+.dialog-actions {
+    padding: 8px 16px;
+    background-color: #fafafa;
+    border-top: 1px solid #e0e0e0;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 </style>
