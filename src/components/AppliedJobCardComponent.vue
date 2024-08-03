@@ -51,7 +51,13 @@
                 :dense="true"
                 @click="showDialog = true"
             >
-                <q-tooltip class="bg-grey-7" :anchor="'top middle'" :self="'bottom middle'" :offset="[10, 10]">
+                <q-tooltip
+                    v-if="buttonConfig.tooltip"
+                    class="bg-grey-7"
+                    :anchor="'top middle'"
+                    :self="'bottom middle'"
+                    :offset="[10, 10]"
+                >
                     {{ buttonConfig.tooltip }}
                 </q-tooltip>
             </q-btn>
@@ -84,13 +90,17 @@
                     Show job details you've applied to
                 </q-tooltip>
             </q-btn>
-            <q-btn @click="fetchContract"> download </q-btn>
+            <q-btn v-if="contractSigned" icon="fas fa-file-download" size="md" color="grey-9" @click="fetchContract">
+                <q-tooltip class="bg-grey-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                    Download contract
+                </q-tooltip>
+            </q-btn>
         </q-card-actions>
     </q-card>
 </template>
 
 <script setup>
-import { computed, ref, inject, defineComponent } from 'vue';
+import { computed, ref, inject, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Notify } from 'quasar';
 import VueSignature from 'vue-signature';
@@ -127,6 +137,16 @@ const route = useRoute();
 const $api = inject('$api');
 const showDialog = ref(false);
 const signature = ref(null);
+const contractSigned = ref(false);
+
+onMounted(async () => {
+    try {
+        const response = await $api.get(`/service-provider/jobs/${props.job.id}/contract/signed`);
+        contractSigned.value = response.data?.signed;
+    } catch (error) {
+        console.error('Failed to check contract status:', error);
+    }
+});
 
 const showDetails = () => {
     router.push({ path: `/service-provider/jobs/${props.job.id}` });
@@ -134,7 +154,13 @@ const showDetails = () => {
 
 const buttonConfig = computed(() => {
     const status = props.application.applicationStatus;
-    if (status === 'selected') {
+    if (contractSigned.value) {
+        return {
+            color: 'grey-9',
+            tooltip: 'Contract is already signed',
+            disabled: true
+        };
+    } else if (status === 'selected') {
         return {
             color: 'green',
             tooltip: 'Sign the contract for your selected job',
@@ -142,18 +168,19 @@ const buttonConfig = computed(() => {
         };
     } else if (status === 'rejected') {
         return {
-            color: 'yellow',
+            color: 'red-8',
             tooltip: 'You have been rejected for this job',
             disabled: true
         };
     } else {
         return {
-            color: 'black',
+            color: 'blue-7',
             tooltip: 'Waiting for client decision',
             disabled: true
         };
     }
 });
+
 const fetchContract = async () => {
     try {
         const response = await $api.get(`/service-provider/jobs/${props.job.id}/generate`, {
@@ -184,6 +211,7 @@ const fetchContract = async () => {
         });
     }
 };
+
 const save = async () => {
     debugger;
     const dataURL = signature.value.save();
@@ -216,6 +244,7 @@ const save = async () => {
         });
     }
 };
+
 const clear = () => {
     signature.value.clear();
 };

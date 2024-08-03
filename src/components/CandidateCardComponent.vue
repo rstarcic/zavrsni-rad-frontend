@@ -131,6 +131,12 @@ export default {
                 a.click();
                 a.remove();
                 window.URL.revokeObjectURL(downloadUrl);
+                Notify.create({
+                    color: 'primary',
+                    textColor: 'white',
+                    icon: 'error',
+                    message: 'Contract successfully generated. Wait for service provider to sign.'
+                });
             } catch (error) {
                 console.error('Error saving signature and generating contract:', error);
                 Notify.create({
