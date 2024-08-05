@@ -91,6 +91,12 @@ const routes = [
                 component: () => import('src/pages/client/service_provider_profile/ServiceProviderProfileDetail.vue'),
                 props: true,
                 meta: { requiresRole: 'client' }
+            },
+            {
+                path: 'generated-contracts',
+                component: () => import('src/pages/client/documents/JobDocumentList.vue'),
+                props: true,
+                meta: { requiresRole: 'client' }
             }
         ]
     },

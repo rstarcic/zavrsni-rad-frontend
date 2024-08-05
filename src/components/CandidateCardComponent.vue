@@ -18,8 +18,24 @@
                         <div class="text-body2">{{ serviceProviderData.city }}, {{ serviceProviderData.country }}</div>
                     </div>
                     <q-card-actions align="center" class="q-gutter-sm q-pt-xl">
-                        <q-btn icon="fas fa-file-contract" size="md" color="purple-8" dense @click="showDialog = true">
-                            <q-tooltip class="bg-purple-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                        <q-btn
+                            icon="fas fa-file-contract"
+                            size="md"
+                            :color="getColor(applicationStatus)"
+                            dense
+                            :disable="isButtonDisabled(applicationStatus)"
+                            @click="showDialog = true"
+                        >
+                            <q-tooltip v-if="isButtonDisabled(applicationStatus)">
+                                {{ getTooltip(applicationStatus) }}
+                            </q-tooltip>
+                            <q-tooltip
+                                v-else
+                                class="bg-purple-7"
+                                anchor="top middle"
+                                self="bottom middle"
+                                :offset="[10, 10]"
+                            >
                                 Generate contract
                             </q-tooltip>
                         </q-btn>
@@ -78,9 +94,13 @@ export default {
         serviceProviderData: {
             type: Object,
             required: true
+        },
+        applicationStatus: {
+            type: String,
+            required: true
         }
     },
-    setup(props) {
+    setup(props, { emit }) {
         const $api = inject('$api');
         const defaultImage = ref(image);
         const showDialog = ref(false);
@@ -137,6 +157,8 @@ export default {
                     icon: 'error',
                     message: 'Contract successfully generated. Wait for service provider to sign.'
                 });
+                emit('refreshCandidates');
+                showDialog.value = false;
             } catch (error) {
                 console.error('Error saving signature and generating contract:', error);
                 Notify.create({
@@ -156,11 +178,41 @@ export default {
                 console.error('Signature pad not found');
             }
         };
+
+        const isButtonDisabled = (applicationStatus) => {
+            debugger;
+            return applicationStatus === 'selected' || applicationStatus === 'rejected';
+        };
+
+        const getTooltip = (applicationStatus) => {
+            debugger;
+            if (applicationStatus === 'selected') {
+                return 'You have already generated contract for this candidate.';
+            } else if (applicationStatus === 'rejected') {
+                return 'You rejected candidate.';
+            } else {
+                return 'Generate contract';
+            }
+        };
+
+        const getColor = (applicationStatus) => {
+            if (applicationStatus === 'selected') {
+                return 'grey-9';
+            } else if (applicationStatus === 'rejected') {
+                return 'red-8';
+            } else {
+                return 'purple-8';
+            }
+        };
+
         return {
             defaultImage,
             showDialog,
             signature,
             option,
+            isButtonDisabled,
+            getTooltip,
+            getColor,
             goToServiceProviderProfile,
             save,
             clear,

@@ -236,6 +236,7 @@ const save = async () => {
         a.click();
         a.remove();
         window.URL.revokeObjectURL(downloadUrl);
+        showDialog.value = false;
     } catch (error) {
         console.error('Error saving signature and generating contract:', error);
         Notify.create({

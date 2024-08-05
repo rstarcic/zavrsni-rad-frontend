@@ -8,8 +8,10 @@
                 <candidate-card-component
                     v-for="candidate in candidateData"
                     :key="candidate.id"
-                    :serviceProviderData="candidate"
+                    :serviceProviderData="candidate.serviceProvider"
+                    :applicationStatus="candidate.applicationStatus"
                     class="candidate-card"
+                    @refreshCandidates="fetchCandidateData"
                 ></candidate-card-component>
             </div>
             <div class="alignment text-subtitle2" v-else>

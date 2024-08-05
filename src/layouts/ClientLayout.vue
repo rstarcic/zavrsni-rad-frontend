@@ -63,7 +63,7 @@
                     </q-item>
 
                     <q-item
-                        :to="`/client/${clientType}/generate-contract`"
+                        :to="`/client/${clientType}/generated-contracts`"
                         :class="{ active: activeItem === 'generatedContracts' }"
                         clickable
                         v-ripple
@@ -225,7 +225,7 @@ export default {
                 [`/client/${clientType.value}/search-jobs`]: 'searchJobs',
                 [`/client/${clientType.value}/posted-jobs`]: 'postedJobs',
                 [`/client/${clientType.value}/post-jobs`]: 'postNewJob',
-                [`/client/${clientType.value}/generate-contract`]: 'generatedContracts',
+                [`/client/${clientType.value}/generated-contracts`]: 'generatedContracts',
                 [`/client/${clientType.value}/profile`]: 'profile',
                 [`/client/${clientType.value}/settings`]: 'settings'
             };
