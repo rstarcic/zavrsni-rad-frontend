@@ -1,5 +1,6 @@
 <template>
     <div class="alignment">
+        <q-spinner v-if="loading" color="white" size="lg" :thickness="10" />
         <div class="card-container">
             <applied-job-card-component
                 v-for="application in applications"
@@ -7,7 +8,11 @@
                 :job="application.JobAd"
                 :application="application"
                 :client="application.JobAd.Client"
+                @contract-signed="fetchJobAndApplicationData"
             />
+        </div>
+        <div v-if="!loading && applications.length === 0" class="text-subtitle2">
+            You currently have no jobs applied for.
         </div>
     </div>
 </template>
@@ -21,14 +26,16 @@ export default {
     },
     data() {
         return {
-            applications: []
+            applications: [],
+            loading: false
         };
     },
     methods: {
         async fetchJobAndApplicationData() {
+            debugger;
             this.loading = true;
             await this.$api
-                .get('/service-provider/applications')
+                .get('/service-provider/applications/applied')
                 .then((response) => {
                     this.applications = response.data.applications;
                     console.log('Applications and job data fetched successfully:', response.data.applications);

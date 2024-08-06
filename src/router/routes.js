@@ -132,6 +132,18 @@ const routes = [
                 meta: { requiresRole: 'service provider' }
             },
             {
+                path: 'current-jobs',
+                component: () => import('src/pages/service_provider/jobs/CurrentJobs.vue'),
+                props: true,
+                meta: { requiresRole: 'service provider' }
+            },
+            {
+                path: 'completed-jobs',
+                component: () => import('src/pages/service_provider/jobs/CompletedJobs.vue'),
+                props: true,
+                meta: { requiresRole: 'service provider' }
+            },
+            {
                 path: 'profile',
                 component: () =>
                     import('src/pages/service_provider/service_provider_profile_settings/ServiceProviderProfile.vue'),

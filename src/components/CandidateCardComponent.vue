@@ -157,8 +157,8 @@ export default {
                     icon: 'error',
                     message: 'Contract successfully generated. Wait for service provider to sign.'
                 });
-                emit('refreshCandidates');
                 showDialog.value = false;
+                emit('refreshCandidates');
             } catch (error) {
                 console.error('Error saving signature and generating contract:', error);
                 Notify.create({

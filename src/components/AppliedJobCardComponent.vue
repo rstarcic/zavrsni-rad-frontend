@@ -90,20 +90,17 @@
                     Show job details you've applied to
                 </q-tooltip>
             </q-btn>
-            <q-btn v-if="contractSigned" icon="fas fa-file-download" size="md" color="grey-9" @click="fetchContract">
-                <q-tooltip class="bg-grey-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                    Download contract
-                </q-tooltip>
-            </q-btn>
         </q-card-actions>
     </q-card>
 </template>
 
 <script setup>
-import { computed, ref, inject, onMounted } from 'vue';
+import { computed, ref, inject, defineEmits } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Notify } from 'quasar';
 import VueSignature from 'vue-signature';
+
+const emit = defineEmits(['contract-signed']);
 const props = defineProps({
     job: {
         type: Object,
@@ -137,16 +134,6 @@ const route = useRoute();
 const $api = inject('$api');
 const showDialog = ref(false);
 const signature = ref(null);
-const contractSigned = ref(false);
-
-onMounted(async () => {
-    try {
-        const response = await $api.get(`/service-provider/jobs/${props.job.id}/contract/signed`);
-        contractSigned.value = response.data?.signed;
-    } catch (error) {
-        console.error('Failed to check contract status:', error);
-    }
-});
 
 const showDetails = () => {
     router.push({ path: `/service-provider/jobs/${props.job.id}` });
@@ -154,13 +141,7 @@ const showDetails = () => {
 
 const buttonConfig = computed(() => {
     const status = props.application.applicationStatus;
-    if (contractSigned.value) {
-        return {
-            color: 'grey-9',
-            tooltip: 'Contract is already signed',
-            disabled: true
-        };
-    } else if (status === 'selected') {
+    if (status === 'selected') {
         return {
             color: 'green',
             tooltip: 'Sign the contract for your selected job',
@@ -180,37 +161,6 @@ const buttonConfig = computed(() => {
         };
     }
 });
-
-const fetchContract = async () => {
-    try {
-        const response = await $api.get(`/service-provider/jobs/${props.job.id}/generate`, {
-            responseType: 'blob'
-        });
-        console.log(response);
-        if (response.status === 200) {
-            const blob = new Blob([response.data], { type: 'application/pdf' });
-            const downloadUrl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = 'contract.pdf';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(downloadUrl);
-        } else {
-            Notify.create({
-                type: 'negative',
-                message: 'Failed to download contract'
-            });
-        }
-    } catch (error) {
-        console.error('Error downloading contract:', error);
-        Notify.create({
-            type: 'negative',
-            message: 'Error downloading contract'
-        });
-    }
-};
 
 const save = async () => {
     debugger;
@@ -237,6 +187,13 @@ const save = async () => {
         a.remove();
         window.URL.revokeObjectURL(downloadUrl);
         showDialog.value = false;
+        Notify.create({
+            color: 'purple',
+            message: '🎉 Congratulations! Your contract is signed. You can now start working on your new job. 🚀',
+            position: 'bottom',
+            timeout: 4000
+        });
+        emit('contract-signed');
     } catch (error) {
         console.error('Error saving signature and generating contract:', error);
         Notify.create({
