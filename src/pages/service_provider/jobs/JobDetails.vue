@@ -241,6 +241,7 @@ export default {
                 });
         },
         applyForJob() {
+            debugger;
             const jobId = this.$route.params.id;
             this.$api
                 .post(`/service-provider/jobs/${jobId}/applications`)
@@ -251,6 +252,7 @@ export default {
                         type: 'positive',
                         position: 'bottom'
                     });
+                    this.createStripeAccount();
                 })
                 .catch((error) => {
                     if (error.response && error.response.data.message) {
@@ -328,6 +330,19 @@ export default {
                 name: 'ClientProfileDetail',
                 params: { clientId: this.client.id }
             });
+        },
+        async createStripeAccount() {
+            debugger;
+            try {
+                const response = await this.$api.post(`/service-provider/stripe-connected-account`);
+                console.log('createStripeAccount', response.data);
+                if (response.data.url && response.data.accountId) {
+                    sessionStorage.setItem('stripeAccountId', response.data.accountId);
+                    window.location.href = response.data.url;
+                }
+            } catch (error) {
+                console.error('There was an error checking bank details!', error);
+            }
         }
     }
 };

@@ -155,6 +155,12 @@ const routes = [
                 component: () =>
                     import('src/pages/service_provider/service_provider_profile_settings/ServiceProviderSettings.vue'),
                 meta: { requiresRole: 'service provider' }
+            },
+            {
+                path: ':serviceProviderId/stripe-onboarding',
+                component: () => import('src/pages/service_provider/stripe/StripeOnboarding.vue'),
+                props: true,
+                meta: { requiresRole: 'service provider' }
             }
         ]
     },

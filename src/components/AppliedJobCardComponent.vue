@@ -193,7 +193,7 @@ const save = async () => {
             position: 'bottom',
             timeout: 4000
         });
-        emit('contract-signed');
+        emit('contract-signed', { job: props.job });
     } catch (error) {
         console.error('Error saving signature and generating contract:', error);
         Notify.create({

@@ -8,7 +8,7 @@
                 :job="application.JobAd"
                 :application="application"
                 :client="application.JobAd.Client"
-                @contract-signed="fetchJobAndApplicationData"
+                @contract-signed="handleContractSigned"
             />
         </div>
         <div v-if="!loading && applications.length === 0" class="text-subtitle2">
@@ -31,6 +31,15 @@ export default {
         };
     },
     methods: {
+        async handleContractSigned({ job }) {
+            debugger;
+            try {
+                await this.createProductPriceAndCustomer(job);
+                this.fetchJobAndApplicationData();
+            } catch (error) {
+                console.error('Error handling contract signing:', error);
+            }
+        },
         async fetchJobAndApplicationData() {
             debugger;
             this.loading = true;
@@ -52,6 +61,28 @@ export default {
                 .finally(() => {
                     this.loading = false;
                 });
+        },
+        async createProductPriceAndCustomer(job) {
+            try {
+                debugger;
+                const response = await this.$api.post(`/service-provider/jobs/${job.id}/create-stripe-product`);
+                if (response.data.success) {
+                    Notify.create({
+                        color: 'green-5',
+                        textColor: 'white',
+                        icon: 'check',
+                        message: 'Stripe product and price created successfully.'
+                    });
+                }
+            } catch (error) {
+                console.error('Error creating Stripe product and price:', error);
+                Notify.create({
+                    color: 'red-5',
+                    textColor: 'white',
+                    icon: 'error',
+                    message: 'Failed to create Stripe product and price.'
+                });
+            }
         }
     },
     mounted() {
