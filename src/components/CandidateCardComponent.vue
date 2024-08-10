@@ -19,6 +19,18 @@
                     </div>
                     <q-card-actions align="center" class="q-gutter-sm q-pt-xl">
                         <q-btn
+                            v-if="jobStatus === 'completed'"
+                            icon="fas fa-dollar-sign"
+                            size="md"
+                            color="green-7"
+                            dense
+                            @click="handlePayClick"
+                        >
+                            <q-tooltip class="bg-green-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                                Pay Now
+                            </q-tooltip>
+                        </q-btn>
+                        <q-btn
                             icon="fas fa-file-contract"
                             size="md"
                             :color="getColor(applicationStatus)"
@@ -98,6 +110,10 @@ export default {
         applicationStatus: {
             type: String,
             required: true
+        },
+        jobStatus: {
+            type: String,
+            required: true
         }
     },
     setup(props, { emit }) {
@@ -109,7 +125,7 @@ export default {
             penColor: 'rgb(0, 0, 0)',
             backgroundColor: 'rgb(255, 255, 255)'
         };
-
+        console.log('Propss jobStatus', props.jobStatus);
         const route = useRoute();
         const router = useRouter();
 
@@ -205,11 +221,34 @@ export default {
             }
         };
 
+        const handlePayClick = async () => {
+            try {
+                debugger;
+                const jobId = route.params.jobId;
+                const response = await $api.post(`/client/jobs/${jobId}/pay-invoice`);
+                if (response.data.url) {
+                    window.location.href = response.data.url;
+                } else {
+                    Notify.create({
+                        type: 'negative',
+                        message: 'Failed to initiate payment.'
+                    });
+                }
+            } catch (error) {
+                console.error('Error initiating payment:', error);
+                Notify.create({
+                    type: 'negative',
+                    message: 'An error occurred while initiating the payment.'
+                });
+            }
+        };
+
         return {
             defaultImage,
             showDialog,
             signature,
             option,
+            handlePayClick,
             isButtonDisabled,
             getTooltip,
             getColor,
@@ -224,7 +263,7 @@ export default {
 
 <style scoped>
 .my-card {
-    width: 400px;
+    width: 425px;
     height: auto;
     background-color: #ffffff;
 }

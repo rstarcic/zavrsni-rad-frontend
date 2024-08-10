@@ -10,6 +10,7 @@
                     :key="candidate.id"
                     :serviceProviderData="candidate.serviceProvider"
                     :applicationStatus="candidate.applicationStatus"
+                    :jobStatus="candidate.jobStatus"
                     class="candidate-card"
                     @refreshCandidates="fetchCandidateData"
                 ></candidate-card-component>

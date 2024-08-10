@@ -131,7 +131,6 @@ const fetchContract = async () => {
 
 const jobDone = async () => {
     try {
-        debugger;
         const response = await $api.patch(`/service-provider/applications/${props.job.id}/complete`);
         if (response && response.status === 200) {
             Notify.create({
@@ -140,7 +139,7 @@ const jobDone = async () => {
                 position: 'bottom',
                 timeout: 4000
             });
-            emit('job-done');
+            emit('job-done', { job: props.job, client: props.client });
         } else {
             Notify.create({
                 type: 'negative',
