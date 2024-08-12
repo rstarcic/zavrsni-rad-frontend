@@ -333,8 +333,9 @@ export default {
         },
         async createStripeAccount() {
             debugger;
+            const jobId = this.$route.params.id;
             try {
-                const response = await this.$api.post(`/service-provider/stripe-connected-account`);
+                const response = await this.$api.post(`/service-provider/jobs/${jobId}/stripe-connected-account`);
                 console.log('createStripeAccount', response.data);
                 if (response.data.url && response.data.accountId) {
                     sessionStorage.setItem('stripeAccountId', response.data.accountId);

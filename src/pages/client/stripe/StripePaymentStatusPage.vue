@@ -1,60 +1,137 @@
 <template>
-    <div></div>
-</template>
-<!-- <template>
-    <div class="status-container">
-        <h1>{{ message }}</h1>
+    <div class="alignment">
+        <q-spinner v-if="loading" size="lg" color="white" :thickness="10" />
+
+        <div v-if="!loading && paymentComplete">
+            <q-card class="q-mt-md">
+                <q-card-section class="text-center">
+                    <div class="text-h6 q-mb-md">Payment successfully completed</div>
+                    <p class="q-mt-lg">{{ message }}</p>
+                </q-card-section>
+            </q-card>
+        </div>
+
+        <div v-if="!loading && !paymentComplete">
+            <q-card class="q-mt-md">
+                <q-card-section class="text-center">
+                    <q-icon name="fab fa-stripe" size="xl" class="q-mb-md"></q-icon>
+                    <div class="text-h6 q-mb-md">Payment Interrupted</div>
+                    <p class="q-mt-lg">{{ message }}</p>
+                    <q-btn color="purple-7" @click="retryPayment" label="Retry Payment" />
+                </q-card-section>
+            </q-card>
+        </div>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
     name: 'PaymentStatus',
     data() {
         return {
-            message: 'Checking payment status...'
+            sessionId: null,
+            jobId: null,
+            paymentFailed: false,
+            loading: false,
+            message: null,
+            paymentComplete: null
         };
     },
     async mounted() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session_id');
+        this.sessionId = this.$route.query.session_id;
+        this.jobId = this.$route.query.jobId;
 
-        if (sessionId) {
+        if (this.sessionId && this.jobId) {
+            await this.checkPaymentStatus();
+        } else {
+            this.message = 'Missing session ID or job ID.';
+            this.loading = false;
+        }
+    },
+    methods: {
+        async retryPayment() {
+            this.loading = true;
             try {
-                const response = await axios.post('http://localhost:3002/api/payments/confirm', {
-                    session_id: sessionId
-                });
+                debugger;
+                console.log('this.jobId', this.jobId);
+                const response = await this.$api.post(`/client/jobs/${this.jobId}/pay-invoice`);
 
-                const data = response.data;
-                if (data.success) {
-                    this.message = 'Payment completed successfully!';
+                if (response.data.success) {
+                    window.location.href = response.data.url;
                 } else {
-                    this.message = 'Payment failed. Please try again.';
+                    this.message = 'Failed to retry payment.';
                 }
             } catch (error) {
-                this.message = 'Error checking payment status.';
-                console.error('Error:', error);
+                console.error('Error retrying payment:', error);
+                this.message = 'Error retrying payment.';
+            } finally {
+                this.loading = false;
             }
-        } else {
-            this.message = 'No session ID provided.';
+        },
+        async checkPaymentStatus() {
+            this.loading = true;
+            if (this.sessionId) {
+                try {
+                    debugger;
+                    const response = await this.$api.post('/client/confirm-payment', {
+                        session_id: this.sessionId,
+                        jobId: this.jobId
+                    });
+
+                    const data = response.data;
+                    if (data.success) {
+                        this.paymentComplete = true;
+                        this.message = 'Payment completed successfully!';
+                    } else {
+                        this.paymentComplete = false;
+                        this.message = 'Payment failed. Please try again.';
+                    }
+                } catch (error) {
+                    this.paymentComplete = false;
+                    this.message = 'Error checking payment status.';
+                    console.error('Error:', error);
+                } finally {
+                    this.loading = false;
+                }
+            } else {
+                this.message = 'No session ID provided.';
+                this.loading = false;
+            }
         }
     }
 };
 </script>
 
 <style scoped>
-.status-container {
+.alignment {
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
+    justify-content: center;
+    height: 80vh;
+}
+.q-card-section.text-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
 }
-
-.status-container h1 {
-    font-size: 2em;
-    color: #4caf50;
+.q-card {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
 }
-</style> -->
+.q-mt-md {
+    margin-top: 16px;
+}
+.q-mt-lg {
+    margin-top: 24px;
+}
+.text-h6 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+.q-mb-md {
+    margin-bottom: 16px;
+}
+</style>

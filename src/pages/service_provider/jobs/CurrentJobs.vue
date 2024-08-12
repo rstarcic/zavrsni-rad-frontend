@@ -72,7 +72,7 @@ export default {
                         color: 'green-5',
                         textColor: 'white',
                         icon: 'check',
-                        message: `Stripe invoice for ${jobId} created successfully.`
+                        message: `Stripe invoice for job ID ${jobId} created successfully.`
                     });
                 }
             } catch (error) {

@@ -97,6 +97,13 @@ const routes = [
                 component: () => import('src/pages/client/documents/JobDocumentList.vue'),
                 props: true,
                 meta: { requiresRole: 'client' }
+            },
+            {
+                path: 'payment-status',
+                name: 'PaymentStatus',
+                component: () => import('src/pages/client/stripe/StripePaymentStatusPage.vue'),
+                props: true,
+                meta: { requiresRole: 'client' }
             }
         ]
     },

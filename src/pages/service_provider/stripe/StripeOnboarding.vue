@@ -127,7 +127,7 @@ export default {
     margin-top: 16px;
 }
 .q-mt-lg {
-    margin-top: 24px; /* Increase the margin-top for more space */
+    margin-top: 24px;
 }
 .text-h6 {
     font-size: 1.25rem;

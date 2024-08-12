@@ -20,7 +20,7 @@
                     <q-card-actions align="center" class="q-gutter-sm q-pt-xl">
                         <q-btn
                             v-if="jobStatus === 'completed'"
-                            icon="fas fa-dollar-sign"
+                            icon="fab fa-cc-stripe"
                             size="md"
                             color="green-7"
                             dense
@@ -225,6 +225,7 @@ export default {
             try {
                 debugger;
                 const jobId = route.params.jobId;
+                console.log('job id', jobId);
                 const response = await $api.post(`/client/jobs/${jobId}/pay-invoice`);
                 if (response.data.url) {
                     window.location.href = response.data.url;
