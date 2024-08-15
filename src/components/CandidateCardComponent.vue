@@ -22,15 +22,26 @@
                             v-if="jobStatus === 'completed'"
                             icon="fab fa-cc-stripe"
                             size="md"
-                            color="green-7"
+                            :color="getColorPayBtn(jobStatus, applicationStatus)"
                             dense
+                            :disable="isPayBtnDisabled(jobStatus, applicationStatus)"
                             @click="handlePayClick"
                         >
-                            <q-tooltip class="bg-green-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                                Pay Now
+                            <q-tooltip v-if="isPayBtnDisabled(jobStatus, applicationStatus)">
+                                {{ getPayTooltip(jobStatus, applicationStatus) }}
+                            </q-tooltip>
+                            <q-tooltip
+                                v-else
+                                class="bg-green-7"
+                                anchor="top middle"
+                                self="bottom middle"
+                                :offset="[10, 10]"
+                            >
+                                Pay this candidate
                             </q-tooltip>
                         </q-btn>
                         <q-btn
+                            v-if="jobStatus !== 'completed'"
                             icon="fas fa-file-contract"
                             size="md"
                             :color="getColor(applicationStatus)"
@@ -49,6 +60,18 @@
                                 :offset="[10, 10]"
                             >
                                 Generate contract
+                            </q-tooltip>
+                        </q-btn>
+                        <q-btn
+                            v-if="jobStatus === 'completed' && applicationStatus === 'completed'"
+                            icon="fas fa-file-invoice"
+                            size="md"
+                            :color="getColorInvoiceBtn(applicationStatus)"
+                            dense
+                            @click="fetchInvoice"
+                        >
+                            <q-tooltip class="bg-purple-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                                Download paid invoice
                             </q-tooltip>
                         </q-btn>
                         <q-dialog v-model="showDialog" persistent>
@@ -197,12 +220,17 @@ export default {
 
         const isButtonDisabled = (applicationStatus) => {
             debugger;
-            return applicationStatus === 'selected' || applicationStatus === 'rejected';
+            return (
+                applicationStatus === 'selected' ||
+                applicationStatus === 'rejected' ||
+                applicationStatus === 'completed'
+            );
         };
 
         const getTooltip = (applicationStatus) => {
-            debugger;
-            if (applicationStatus === 'selected') {
+            if (applicationStatus === 'completed') {
+                return 'Contract already generated for this candidate.';
+            } else if (applicationStatus === 'selected') {
                 return 'You have already generated contract for this candidate.';
             } else if (applicationStatus === 'rejected') {
                 return 'You rejected candidate.';
@@ -212,7 +240,7 @@ export default {
         };
 
         const getColor = (applicationStatus) => {
-            if (applicationStatus === 'selected') {
+            if (applicationStatus === 'selected' || applicationStatus === 'completed') {
                 return 'grey-9';
             } else if (applicationStatus === 'rejected') {
                 return 'red-8';
@@ -221,12 +249,44 @@ export default {
             }
         };
 
+        const getColorPayBtn = (jobStatus, applicationStatus) => {
+            debugger;
+            if (jobStatus === 'completed' && applicationStatus === 'selected') {
+                return 'green-7';
+            } else if (jobStatus === 'completed' && applicationStatus === 'completed') {
+                return 'grey-9';
+            } else {
+                return 'purple-8';
+            }
+        };
+
+        const getColorInvoiceBtn = (applicationStatus) => {
+            if (applicationStatus === 'completed') {
+                return 'purple-8';
+            }
+        };
+
+        const isPayBtnDisabled = (jobStatus, applicationStatus) => {
+            return applicationStatus === 'completed' && jobStatus === 'completed';
+        };
+
+        const getPayTooltip = (jobStatus, applicationStatus) => {
+            if (jobStatus === 'completed' && applicationStatus === 'completed') {
+                return 'You have already paid this candidate.';
+            } else if (jobStatus === 'completed' && applicationStatus === 'selected') {
+                return 'Pay this candidate.';
+            } else {
+                return 'Something went wrong';
+            }
+        };
+
         const handlePayClick = async () => {
+            debugger;
             try {
                 debugger;
                 const jobId = route.params.jobId;
                 console.log('job id', jobId);
-                const response = await $api.post(`/client/jobs/${jobId}/pay-invoice`);
+                const response = await $api.post(`/client/jobs/${jobId}/pay`);
                 if (response.data.url) {
                     window.location.href = response.data.url;
                 } else {
@@ -244,12 +304,51 @@ export default {
             }
         };
 
+        const fetchInvoice = async () => {
+            try {
+                debugger;
+                const jobId = route.params.jobId;
+                const response = await $api.get(`/client/jobs/${jobId}/invoice`, {
+                    responseType: 'blob'
+                });
+                debugger;
+                if (response.status === 200) {
+                    const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `invoice_${jobId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(downloadUrl);
+
+                    Notify.create({
+                        color: 'primary',
+                        textColor: 'white',
+                        icon: 'cloud_download',
+                        message: 'Invoice successfully downloaded.'
+                    });
+                }
+            } catch (error) {
+                console.error('Error downloading invoice:', error);
+                Notify.create({
+                    type: 'negative',
+                    message: 'Failed to download invoice.'
+                });
+            }
+        };
+
         return {
             defaultImage,
             showDialog,
             signature,
             option,
+            fetchInvoice,
+            getColorPayBtn,
+            isPayBtnDisabled,
+            getPayTooltip,
             handlePayClick,
+            getColorInvoiceBtn,
             isButtonDisabled,
             getTooltip,
             getColor,

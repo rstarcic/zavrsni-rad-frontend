@@ -139,7 +139,7 @@ const jobDone = async () => {
                 position: 'bottom',
                 timeout: 4000
             });
-            emit('job-done', { job: props.job, client: props.client });
+            emit('job-done');
         } else {
             Notify.create({
                 type: 'negative',

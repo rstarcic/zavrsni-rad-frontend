@@ -5,6 +5,7 @@
         <div v-if="!loading && onboardingComplete">
             <q-card class="q-mt-md">
                 <q-card-section class="text-center">
+                    <q-icon name="fab fa-stripe" size="xl" class="q-mb-md"></q-icon>
                     <div class="text-h6 q-mb-md">Onboarding Complete</div>
                     <p class="q-mt-lg">Your Stripe account has been successfully set up!</p>
                 </q-card-section>

@@ -5,8 +5,14 @@
         <div v-if="!loading && paymentComplete">
             <q-card class="q-mt-md">
                 <q-card-section class="text-center">
-                    <div class="text-h6 q-mb-md">Payment successfully completed</div>
-                    <p class="q-mt-lg">{{ message }}</p>
+                    <q-icon name="fab fa-stripe" size="xl" class="q-mb-md"></q-icon>
+                    <div class="text-h6 q-mb-md">{{ message }}</div>
+
+                    <router-link :to="`/client/${this.clientType}/posted-jobs/${this.jobId}/candidates`">
+                        <q-btn color="purple-7" label="Go to Candidates" icon="arrow_forward" class="q-mt-md" v-ripple>
+                            <q-tooltip class="bg-purple text-body2"> Click here and download your invoice. </q-tooltip>
+                        </q-btn>
+                    </router-link>
                 </q-card-section>
             </q-card>
         </div>
@@ -16,7 +22,6 @@
                 <q-card-section class="text-center">
                     <q-icon name="fab fa-stripe" size="xl" class="q-mb-md"></q-icon>
                     <div class="text-h6 q-mb-md">Payment Interrupted</div>
-                    <p class="q-mt-lg">{{ message }}</p>
                     <q-btn color="purple-7" @click="retryPayment" label="Retry Payment" />
                 </q-card-section>
             </q-card>
@@ -34,8 +39,13 @@ export default {
             paymentFailed: false,
             loading: false,
             message: null,
-            paymentComplete: null
+            paymentComplete: null,
+            clientType: null
         };
+    },
+    created() {
+        let user = JSON.parse(sessionStorage.getItem('user'));
+        this.clientType = user.type;
     },
     async mounted() {
         this.sessionId = this.$route.query.session_id;
@@ -54,7 +64,7 @@ export default {
             try {
                 debugger;
                 console.log('this.jobId', this.jobId);
-                const response = await this.$api.post(`/client/jobs/${this.jobId}/pay-invoice`);
+                const response = await this.$api.post(`/client/jobs/${this.jobId}/pay`);
 
                 if (response.data.success) {
                     window.location.href = response.data.url;
@@ -78,8 +88,7 @@ export default {
                         jobId: this.jobId
                     });
 
-                    const data = response.data;
-                    if (data.success) {
+                    if (response.data.success) {
                         this.paymentComplete = true;
                         this.message = 'Payment completed successfully!';
                     } else {

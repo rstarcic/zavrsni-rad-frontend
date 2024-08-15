@@ -43,6 +43,11 @@
         <q-separator inset />
 
         <q-card-actions align="center">
+            <q-btn icon="fab fa-stripe" size="md" color="green-8" dense v-if="isPaymentComplete">
+                <q-tooltip class="bg-green-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                    💰 You have been paid for this job
+                </q-tooltip>
+            </q-btn>
             <q-btn icon="fas fa-eye" size="md" color="grey-9" dense @click="showDetails">
                 <q-tooltip class="bg-grey-7" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     Show job details you've applied to
@@ -86,6 +91,10 @@ const router = useRouter();
 const showDetails = () => {
     router.push({ path: `/service-provider/jobs/${props.job.id}` });
 };
+
+const isPaymentComplete = computed(() => {
+    return props.application.jobStatus === 'completed' && props.application.applicationStatus === 'completed';
+});
 </script>
 
 <style scoped>

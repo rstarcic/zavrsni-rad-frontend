@@ -31,10 +31,9 @@ export default {
         };
     },
     methods: {
-        async handleContractSigned({ job, client }) {
+        async handleContractSigned() {
             debugger;
             try {
-                await this.createInvoice(job.id, client.id);
                 this.fetchJobAndApplicationData();
             } catch (error) {
                 console.error('Error handling job done:', error);
@@ -60,30 +59,6 @@ export default {
                 .finally(() => {
                     this.loading = false;
                 });
-        },
-        async createInvoice(jobId, clientId) {
-            try {
-                debugger;
-                const response = await this.$api.post(
-                    `/service-provider/jobs/${jobId}/client/${clientId}/create-invoice`
-                );
-                if (response.data.success) {
-                    Notify.create({
-                        color: 'green-5',
-                        textColor: 'white',
-                        icon: 'check',
-                        message: `Stripe invoice for job ID ${jobId} created successfully.`
-                    });
-                }
-            } catch (error) {
-                console.error('Error creating Stripe invoice:', error);
-                Notify.create({
-                    color: 'red-5',
-                    textColor: 'white',
-                    icon: 'error',
-                    message: 'Failed to create Stripe invoice for ${jobId}.'
-                });
-            }
         }
     },
     mounted() {
