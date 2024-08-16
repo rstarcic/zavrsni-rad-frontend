@@ -159,8 +159,9 @@
                     color="purple-5"
                     label="Duration"
                     class="col"
-                    hint="Indicate the expected duration of the job (e.g., 3 weeks, 6 months)."
-                    :rules="requiredRule"
+                    type="number"
+                    hint="Indicate the expected duration of the job in days."
+                    :rules="dayNumberRules"
                     :readonly="!isEditing"
                 />
                 <q-input
@@ -272,7 +273,8 @@ export default {
             currencyOptions: stripeCurrencies,
             dateIsValidFormatRule: utils.dateIsValidFormatRule,
             deadlineRules: utils.deadlineRules,
-            requiredRule: utils.required
+            requiredRule: utils.required,
+            dayNumberRules: utils.dayNumberRules
         };
     },
     computed: {

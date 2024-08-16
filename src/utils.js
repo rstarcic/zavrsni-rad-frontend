@@ -53,5 +53,9 @@ export default {
             return deadlineDate > currentDate || 'Deadline must be a future date';
         }
     ],
+    dayNumberRules: [
+        (val) => !!val || 'Number of days working required',
+        (val) => /^\d{1,5}$/.test(val) || 'Input must contain only numbers and should not exceed 5 digits'
+    ],
     required: [(val) => !!val || 'This field is required']
 };

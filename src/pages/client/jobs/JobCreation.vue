@@ -154,13 +154,14 @@
             <div class="row q-gutter-lg custom-row">
                 <q-input
                     v-model="jobData.duration"
+                    type="number"
                     label-color="purple-2"
                     color="purple-2"
                     label="Duration"
                     dark
                     class="col"
-                    hint="Indicate the expected duration of the job (e.g., 3 weeks, 6 months)."
-                    :rules="requiredRule"
+                    hint="Indicate the expected duration of the job in days."
+                    :rules="dayNumberRules"
                 />
                 <q-input
                     v-model="jobData.contactInfo"
@@ -232,7 +233,8 @@ export default {
             currencyOptions: stripeCurrencies,
             dateIsValidFormatRule: utils.dateIsValidFormatRule,
             deadlineRules: utils.deadlineRules,
-            requiredRule: utils.required
+            requiredRule: utils.required,
+            dayNumberRules: utils.dayNumberRules
         };
     },
     methods: {
