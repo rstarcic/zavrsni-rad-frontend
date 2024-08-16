@@ -10,30 +10,43 @@
                         @click="this.$router.push('/')"
                     />
                 </q-toolbar-title>
-                <q-btn class="loginBtn q-mx-md" size="md" padding="xs lg" @click="this.$router.push('/login')"
-                    >Login</q-btn
-                >
-                <q-btn-dropdown
-                    label="Sign Up"
-                    dropdown-icon="change_history"
-                    class="signupBtn"
-                    size="md"
-                    padding="xs md"
-                >
-                    <q-list>
-                        <q-item clickable v-close-popup @click="onItemClick('/signup/client')">
-                            <q-item-section>
-                                <q-item-label>Client</q-item-label>
-                            </q-item-section>
-                        </q-item>
+                <div v-if="!isAuthenticated">
+                    <q-btn class="loginBtn q-mx-md" size="md" padding="xs lg" @click="this.$router.push('/login')"
+                        >Login</q-btn
+                    >
+                    <q-btn-dropdown
+                        label="Sign Up"
+                        dropdown-icon="change_history"
+                        class="signupBtn"
+                        size="md"
+                        padding="xs md"
+                    >
+                        <q-list>
+                            <q-item clickable v-close-popup @click="onItemClick('/signup/client')">
+                                <q-item-section>
+                                    <q-item-label>Client</q-item-label>
+                                </q-item-section>
+                            </q-item>
 
-                        <q-item clickable v-close-popup @click="onItemClick('/signup/service-provider')">
-                            <q-item-section>
-                                <q-item-label>Service provider</q-item-label>
-                            </q-item-section>
-                        </q-item>
-                    </q-list>
-                </q-btn-dropdown>
+                            <q-item clickable v-close-popup @click="onItemClick('/signup/service-provider')">
+                                <q-item-section>
+                                    <q-item-label>Service provider</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-btn-dropdown>
+                </div>
+                <div v-else>
+                    <q-btn
+                        text-color="white"
+                        label="Go Back"
+                        icon-right="arrow_forward"
+                        flat
+                        @click="goBack"
+                        class="goBackBtn q-mx-md"
+                    >
+                    </q-btn>
+                </div>
             </q-toolbar>
         </q-header>
 
@@ -44,9 +57,23 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 export default {
     name: 'MainLayout',
+    setup() {
+        const router = useRouter();
+        const isAuthenticated = computed(() => !!localStorage.getItem('token'));
+
+        const goBack = () => {
+            const prevRoute = sessionStorage.getItem('previousRoute');
+            if (prevRoute) {
+                router.push(prevRoute);
+            }
+        };
+
+        return { isAuthenticated, goBack };
+    },
     methods: {
         onItemClick(path) {
             this.$router.push(path);
@@ -70,5 +97,10 @@ export default {
 }
 .background-color {
     background-color: #8e68b2;
+}
+.goBackBtn {
+    border: 3px solid;
+    border-image: linear-gradient(100deg, #5485be, #b5458a, #900e93) 1;
+    border-radius: 0%;
 }
 </style>

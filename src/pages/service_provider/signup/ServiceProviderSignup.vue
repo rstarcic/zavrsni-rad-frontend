@@ -344,7 +344,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 130vh;
+    min-height: 70vh;
 }
 
 .title,

@@ -9,7 +9,7 @@
                         src="../assets/blackJobifyLogo.png"
                         alt="Jobify Logo"
                         style="max-width: 150px"
-                        @click="this.$router.push('/')"
+                        @click="goToHomePage"
                     />
                 </q-toolbar-title>
                 <q-btn class="logoutBtn q-mx-md" size="md" padding="xs lg" @click="logout">Logout</q-btn>
@@ -132,8 +132,8 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import defaultImage from 'src/assets/profile-account-unknown.jpg';
 export default {
     name: 'ServiceProviderLayout',
@@ -144,8 +144,15 @@ export default {
         const userName = ref('');
         const userEmail = ref('');
         const route = useRoute();
+        const router = useRouter();
         const defaultUserName = 'Guest User';
         const defaultUserEmail = 'No email';
+        const previousRoute = ref(sessionStorage.getItem('previousRoute'));
+
+        const goToHomePage = () => {
+            sessionStorage.setItem('previousRoute', route.fullPath);
+            router.push('/');
+        };
 
         function toggleLeftDrawer() {
             leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -228,7 +235,9 @@ export default {
             userName,
             userEmail,
             loadProfileImage,
-            loadUserData
+            loadUserData,
+            goToHomePage,
+            previousRoute
         };
     },
     methods: {

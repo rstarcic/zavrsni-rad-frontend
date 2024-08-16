@@ -1,22 +1,18 @@
 <template>
     <div class="alignment">
         <q-card v-if="!selectionMade" class="selection-card shadow-10">
-            <q-card-section>
-                <div class="text-h6 title text-purple-1">Select Client Type</div>
-                <div class="text-subtitle2 subtitle text-purple-1">Please select your client type</div>
-            </q-card-section>
             <div class="q-pa-md selection-buttons">
                 <q-btn
                     size="22px"
-                    class="q-px-xl q-py-xs q-mx-md"
-                    color="purple"
+                    class="q-px-xl q-py-xs q-mx-md individual-btn"
+                    color="purple-9"
                     label="Private Individual"
                     @click="checkClientType('individual')"
                 />
                 <q-btn
                     size="22px"
                     class="q-px-xl q-py-xs q-mx-md"
-                    color="purple"
+                    style="background-color: #383737; color: white"
                     label="Business Company"
                     @click="checkClientType('business')"
                 />
@@ -530,7 +526,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 130vh;
+    min-height: 70vh;
 }
 .signup-btn {
     margin: 20px;
@@ -552,5 +548,17 @@ export default {
     margin: 0px;
     width: 100%;
     width: 300px;
+}
+
+.selection-card {
+    background-image: url('src/assets/pexels-andreaedavis-365384966.jpg'), url('src/assets/laptop-1846277_128066.jpg');
+    background-size: 50% 100%, 50% 100%;
+    background-position: left, right;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>
