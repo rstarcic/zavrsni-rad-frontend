@@ -182,7 +182,6 @@
                     label="Application deadline"
                     dark
                     :rules="deadlineRules"
-                    years-in-month-view
                     class="col"
                 />
                 <q-input

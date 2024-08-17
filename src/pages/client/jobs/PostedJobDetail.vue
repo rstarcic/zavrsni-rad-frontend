@@ -283,6 +283,10 @@ export default {
         }
     },
     methods: {
+        formatDateToYYYYMMDD(dateString) {
+            const [month, day, year] = dateString.split('/');
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        },
         filterCategories(val, update) {
             update(() => {
                 const needle = val.toLowerCase();
@@ -300,6 +304,11 @@ export default {
                 .get(`/client/jobs/${this.jobId}/detail`)
                 .then((response) => {
                     this.postedJob = response.data.job;
+                    this.postedJob.applicationDeadline = this.formatDateToYYYYMMDD(
+                        response.data.job.applicationDeadline
+                    );
+                    this.postedJob.workDeadline = this.formatDateToYYYYMMDD(response.data.job.workDeadline);
+
                     console.log('Jobs fetched successfully:', response.data.job);
                 })
                 .catch((error) => {

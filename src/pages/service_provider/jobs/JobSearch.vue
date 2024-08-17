@@ -87,6 +87,9 @@
                 </div>
             </div>
         </div>
+        <div v-if="loading" class="loading-container q-pa-xl">
+            <q-spinner size="lg" color="white" :thickness="10" />
+        </div>
         <div class="card-container">
             <div v-for="(job, index) in filteredJobs" :key="index">
                 <jobCardComponent :job="job" :role="userRole" :type="userType" />
@@ -118,7 +121,8 @@ export default {
             availableTitles: [],
             availableCategories: [],
             availableLocations: [],
-            selectedFilters: []
+            selectedFilters: [],
+            loading: true
         };
     },
     computed: {
@@ -139,10 +143,11 @@ export default {
     },
     methods: {
         async fetchDataForJobCard() {
-            console.log('Fetching job data...');
+            this.loading = true;
             await this.$api
                 .get('/jobs/summary')
                 .then((response) => {
+                    this.loading = false;
                     this.jobs = response.data.jobs;
                     this.initializeDropdownData();
                     console.log('Jobs ', this.jobs);
@@ -168,7 +173,6 @@ export default {
         },
         async fetchFilteredJobs() {
             try {
-                debugger;
                 const params = {
                     categories: Array.isArray(this.filters.category) ? this.filters.category : [this.filters.category],
                     locations: Array.isArray(this.filters.location) ? this.filters.location : [this.filters.location],
@@ -176,7 +180,6 @@ export default {
                     minHourlyRate: this.filters.hourlyRate.min,
                     maxHourlyRate: this.filters.hourlyRate.max
                 };
-                debugger;
                 const response = await this.$api.get('/jobs/summary', {
                     params
                 });
@@ -316,5 +319,13 @@ export default {
 .search-icon:hover {
     transform: scale(1.1);
     transition: transform 0.4s ease;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 </style>

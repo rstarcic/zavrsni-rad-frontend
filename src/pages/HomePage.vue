@@ -12,7 +12,10 @@
             </q-parallax>
         </div>
         <div class="text-h4 text-offset alignment">Newest <span class="job-color">&nbsp;jobs&nbsp;</span> for you</div>
-        <div>
+        <div v-if="loading" class="loading-container q-pa-xl">
+            <q-spinner size="lg" color="white" :thickness="10" />
+        </div>
+        <div v-else>
             <div class="row text-offset">
                 <div class="card alignment col-xs-4 col-sm-6 col-md-4" v-for="(job, index) in jobs" :key="index">
                     <HomeJobCardComponent :job="job" :color="color"></HomeJobCardComponent>
@@ -208,14 +211,17 @@ export default {
     data() {
         return {
             jobs: [],
-            color: '#642b73'
+            color: '#642b73',
+            loading: true
         };
     },
     methods: {
         async fetchDataForHomePage() {
+            this.loading = true;
             await this.$api
                 .get('/jobs/home', { params: { limit: 9 } })
                 .then((response) => {
+                    this.loading = false;
                     this.jobs = response.data.jobs;
                     console.log('Jobs ', this.jobs);
                 })
@@ -342,6 +348,16 @@ export default {
 .stripe-title {
     margin-bottom: 20px;
 }
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    text-align: center;
+}
+
 @keyframes slide-up {
     0% {
         transform: translateY(100%);
