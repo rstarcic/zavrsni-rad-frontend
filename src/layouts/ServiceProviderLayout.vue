@@ -160,7 +160,6 @@ export default {
 
         function setActive(itemName) {
             activeItem.value = itemName;
-            console.log('Active item set to:', itemName);
         }
 
         async function loadUserData() {
@@ -173,16 +172,13 @@ export default {
                     const userDataFetched = response.data.user;
                     userName.value = userDataFetched.firstName + ' ' + userDataFetched.lastName;
                     userEmail.value = userDataFetched.email;
-                    console.log('User data loaded and assigned', userData);
                 } catch (error) {
-                    console.log('There was an error fetching user data!', error);
                     userName.value = defaultUserName;
                     userEmail.value = defaultUserEmail;
                 }
             } else if (userData) {
                 userName.value = userData.firstName + ' ' + userData.lastName;
                 userEmail.value = userData.email;
-                console.log('Missing userId in sessionStorage');
             } else {
                 userName.value = defaultUserName;
                 userEmail.value = defaultUserEmail;
@@ -195,20 +191,16 @@ export default {
 
             if (userData && userData.profileImage) {
                 profileImage.value = userData.profileImage || defaultImage;
-                console.log('Loaded profile image from session storage', userData.profileImage);
             } else if (userId) {
                 try {
                     const response = await $api.get(`/service-provider/photo/${userId}`);
                     const userPhoto = response.data.encodedImage;
                     profileImage.value = userPhoto || defaultImage;
-                    console.log('Data loaded from API and assigned', this.user);
                 } catch (error) {
                     profileImage.value = defaultImage;
-                    console.log('There was an error fetching user data!', error);
                 }
             } else {
                 profileImage.value = defaultImage;
-                console.log('Missing userId in sessionStorage');
             }
         }
 

@@ -253,7 +253,6 @@ export default {
             this.$api
                 .post('/client/jobs', this.jobData)
                 .then((response) => {
-                    console.log('Job posted successfully:', response.data);
                     Notify.create({
                         color: 'green-4',
                         textColor: 'white',

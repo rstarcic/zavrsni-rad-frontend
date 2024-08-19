@@ -482,7 +482,6 @@ export default {
 
                     sessionStorage.setItem('user', JSON.stringify(user));
                     sessionStorage.setItem('userId', user.id);
-                    console.log('Use auth signup client role:', user);
 
                     if (user.role === 'client' && user.type === 'individual') {
                         this.$router.push('/client/individual/search-jobs');

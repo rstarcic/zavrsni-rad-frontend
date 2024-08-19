@@ -150,7 +150,6 @@ export default {
                     this.loading = false;
                     this.jobs = response.data.jobs;
                     this.initializeDropdownData();
-                    console.log('Jobs ', this.jobs);
                 })
                 .catch((error) => {
                     console.error('There was an error fetching user data!', error);
@@ -202,10 +201,6 @@ export default {
             this.availableTitles = this.createDropdownOptions(this.jobs, 'title');
             this.availableCategories = this.createDropdownOptions(this.jobs, 'category');
             this.availableLocations = this.createDropdownOptions(this.jobs, 'location');
-
-            console.log('Dropdown titles:', this.availableTitles);
-            console.log('Dropdown categories:', this.availableCategories);
-            console.log('Dropdown locations:', this.availableLocations);
         },
         applyFilter(type, value) {
             if (Array.isArray(this.filters[type])) {

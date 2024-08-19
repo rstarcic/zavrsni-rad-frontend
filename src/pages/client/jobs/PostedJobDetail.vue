@@ -244,9 +244,6 @@ export default {
             required: true
         }
     },
-    created() {
-        console.log(`Loading details for job with ID: ${this.jobId}`);
-    },
     data() {
         return {
             postedJob: {
@@ -308,8 +305,6 @@ export default {
                         response.data.job.applicationDeadline
                     );
                     this.postedJob.workDeadline = this.formatDateToYYYYMMDD(response.data.job.workDeadline);
-
-                    console.log('Jobs fetched successfully:', response.data.job);
                 })
                 .catch((error) => {
                     console.error('Error fetching jobs:', error);
@@ -325,7 +320,6 @@ export default {
                         type: 'positive',
                         position: 'bottom'
                     });
-                    console.log('Jobs fetched successfully:', response.data.jobs);
                 })
                 .catch((error) => {
                     Notify.create({
@@ -340,7 +334,6 @@ export default {
             await this.$api
                 .delete(`/client/jobs/${this.jobId}/detail`)
                 .then((response) => {
-                    console.log('Job deleted successfully');
                     const clientType = JSON.parse(sessionStorage.getItem('user')).type;
                     this.$router.push(`/client/${clientType}/posted-jobs`);
                 })
@@ -367,7 +360,6 @@ export default {
                             position: 'bottom'
                         });
                     }
-                    console.log('Jobs fetched successfully:', response.data.jobs);
                 })
                 .catch((error) => {
                     Notify.create({

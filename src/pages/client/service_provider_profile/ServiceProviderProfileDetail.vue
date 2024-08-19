@@ -272,7 +272,6 @@ export default {
                 .get(`/client/candidates/${this.candidateId}`)
                 .then((response) => {
                     const data = response.data;
-                    console.log('Service provider profile data', response.data);
                     this.user = data.user;
                     this.skills = data.user?.skills.length ? data.user.skills : [];
                     this.education = data.education || {};

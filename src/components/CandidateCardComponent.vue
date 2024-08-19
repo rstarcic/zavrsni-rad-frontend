@@ -148,7 +148,6 @@ export default {
             penColor: 'rgb(0, 0, 0)',
             backgroundColor: 'rgb(255, 255, 255)'
         };
-        console.log('Propss jobStatus', props.jobStatus);
         const route = useRoute();
         const router = useRouter();
 
@@ -179,7 +178,6 @@ export default {
                         responseType: 'blob'
                     }
                 );
-                console.log(response);
 
                 const downloadUrl = window.URL.createObjectURL(response.data);
                 const a = document.createElement('a');
@@ -280,7 +278,6 @@ export default {
         const handlePayClick = async () => {
             try {
                 const jobId = route.params.jobId;
-                console.log('job id', jobId);
                 const response = await $api.post(`/client/jobs/${jobId}/pay`);
                 if (response.data.url) {
                     window.location.href = response.data.url;

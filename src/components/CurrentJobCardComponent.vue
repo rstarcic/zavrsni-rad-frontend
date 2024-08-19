@@ -103,7 +103,6 @@ const fetchContract = async () => {
         const response = await $api.get(`/service-provider/jobs/${props.job.id}/generate`, {
             responseType: 'blob'
         });
-        console.log(response);
         if (response.status === 200) {
             const blob = new Blob([response.data], { type: 'application/pdf' });
             const downloadUrl = window.URL.createObjectURL(blob);

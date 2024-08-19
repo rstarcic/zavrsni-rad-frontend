@@ -37,12 +37,10 @@ export default {
     methods: {
         async fetchCandidateData() {
             const jobId = this.$route.params.jobId;
-            console.log(jobId);
             this.loading = true;
             this.$api
                 .get(`/client/jobs/${jobId}/candidates`)
                 .then((response) => {
-                    console.log(response.data);
                     this.candidateData = response.data.candidates;
                 })
                 .catch((error) => {

@@ -256,17 +256,13 @@ export default {
                     .then((response) => {
                         userData = response.data.userDataFetched;
                         sessionStorage.setItem('user', JSON.stringify(response.data.userDataFetched));
-                        console.log('repsonse image:', response.data.userDataFetched.profileImage);
-                        console.log('repsonse user:', response.data.userDataFetched);
                         Object.assign(this.user, userData);
-                        console.log('Api assigned', this.user);
                     })
                     .catch((error) => {
                         console.error('There was an error fetching user data!', error);
                     });
             } else if (userData) {
                 this.user = { ...userData };
-                console.log('Session storage assigned', this.user);
             }
         },
         async saveProfileChanges() {
@@ -279,11 +275,8 @@ export default {
                 await this.$api
                     .patch(`/client/profile`, userDataToUpdate)
                     .then((response) => {
-                        console.log('repsonse image:', response.data.userDataUpdated.profileImage);
                         sessionStorage.setItem('user', JSON.stringify(response.data.userDataUpdated));
-                        console.log('repsonse user:', response.data.userDataUpdated);
                         this.user.profileImage = response.data.userDataUpdated.profileImage;
-                        console.log('Server response:', response.data.userDataUpdated);
                         Notify.create({
                             message: 'Profile successfully saved!',
                             type: 'positive',

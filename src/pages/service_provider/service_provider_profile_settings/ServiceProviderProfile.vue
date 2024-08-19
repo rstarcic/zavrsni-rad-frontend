@@ -364,13 +364,10 @@ export default {
                     language: this.languages,
                     userId
                 };
-                console.log('userDataToUpdate', userDataToUpdate);
                 await this.$api
                     .patch(`/service-provider/profile`, userDataToUpdate)
                     .then((response) => {
-                        console.log('Server response:', response);
                         sessionStorage.setItem('user', JSON.stringify(response.data.user) || {});
-                        console.log('response.data.updatedUser', response.data.user.profileImage);
                         this.user.profileImage = response.data.user.profileImage;
                         sessionStorage.setItem('workExperience', JSON.stringify(response.data.workExperience || {}));
                         sessionStorage.setItem('education', JSON.stringify(response.data.education || {}));
@@ -408,7 +405,6 @@ export default {
                         this.skills = userDataFetched.user?.skills.length
                             ? userDataFetched.user.skills
                             : [{ name: '' }, { name: '' }, { name: '' }];
-                        console.log('userDataFetched.user.skills', userDataFetched.user.skills);
                         this.education = userDataFetched.education || {};
                         this.workExperience = userDataFetched.workExperience || {};
                         this.languages = userDataFetched.languages.length
@@ -421,7 +417,6 @@ export default {
                         sessionStorage.setItem('education', JSON.stringify(this.education));
                         sessionStorage.setItem('workExperience', JSON.stringify(this.workExperience));
                         sessionStorage.setItem('languages', JSON.stringify(this.languages));
-                        console.log('Data loaded from API and assigned', this.user);
                     })
                     .catch((error) => {
                         console.error('There was an error fetching user data!', error);
@@ -429,11 +424,9 @@ export default {
             } else if (userData && education && workExperience && languages) {
                 this.user = userData || {};
                 this.skills = userData.skills || [];
-                console.log('userData.skills', userData.skills);
                 this.education = education || {};
                 this.workExperience = workExperience || {};
                 this.languages = languages || [];
-                console.log('Session storage assigned', this.user);
             } else {
                 console.error('Missing userId in sessionStorage');
             }

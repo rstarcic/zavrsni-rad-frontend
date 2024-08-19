@@ -44,7 +44,6 @@ export default {
                 .get('/service-provider/applications/current')
                 .then((response) => {
                     this.applications = response.data.applications;
-                    console.log('Applications and job data fetched successfully:', response.data.applications);
                 })
                 .catch((error) => {
                     console.error('Error fetching jobs:', error);

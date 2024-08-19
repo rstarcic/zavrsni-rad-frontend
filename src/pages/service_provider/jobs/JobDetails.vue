@@ -228,7 +228,6 @@ export default {
     methods: {
         async fetchJobDetails() {
             this.loading = true;
-            console.log(`/service-provider/jobs/${this.id}`);
             this.$api
                 .get(`/service-provider/jobs/${this.id}`)
                 .then((response) => {
@@ -245,7 +244,6 @@ export default {
             this.$api
                 .post(`/service-provider/jobs/${jobId}/applications`)
                 .then((response) => {
-                    console.log('Job response: ', response.data);
                     Notify.create({
                         message: response.data.message,
                         type: 'positive',
@@ -276,13 +274,11 @@ export default {
                     }
                     console.error('There was an error applying to a job!', error);
                 });
-            console.log(`Applying for job ${jobId}`);
         },
         async checkUserBankDetails() {
             try {
                 const response = await this.$api.get('/service-provider/jobs/bank-details');
                 this.userHasBankDetails = response.data.hasBankDetails;
-                console.log(response.data.hasBankDetails);
             } catch (error) {
                 console.error('There was an error checking bank details!', error);
             }
@@ -338,7 +334,6 @@ export default {
             const jobId = this.$route.params.id;
             try {
                 const response = await this.$api.post(`/service-provider/jobs/${jobId}/stripe-connected-account`);
-                console.log('createStripeAccount', response.data);
                 if (response.data.url && response.data.accountId) {
                     sessionStorage.setItem('stripeAccountId', response.data.accountId);
                     window.location.href = response.data.url;

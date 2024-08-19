@@ -86,7 +86,6 @@ export default {
                 .get('/client/contracts')
                 .then((response) => {
                     this.contracts = response.data.contracts;
-                    console.log('Contracts fetched successfully:', response.data.contracts);
                 })
                 .catch((error) => {
                     console.error('Error fetching contracts:', error);
@@ -107,7 +106,6 @@ export default {
                     responseType: 'blob'
                 })
                 .then((response) => {
-                    console.log('Contract fetched successfully:', response);
                     const blob = new Blob([response.data], { type: 'application/pdf' });
                     const downloadUrl = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');

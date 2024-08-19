@@ -99,7 +99,6 @@ export default {
                     sessionStorage.setItem('user', JSON.stringify(response.data.user));
                     const user = response.data.user;
                     sessionStorage.setItem('userId', user.id);
-                    console.log(user.id);
                     if (user.role === 'service provider') {
                         this.$router.push('/service-provider/search-jobs');
                     } else if (user.role === 'client' && user.type === 'individual') {
@@ -127,7 +126,6 @@ export default {
                             message: 'Failed to login: ' + error.message,
                             icon: 'error'
                         });
-                        console.log('Login failed: ', error);
                     }
                 });
         },
@@ -145,7 +143,6 @@ export default {
                     const user = response.data.user;
                     sessionStorage.setItem('userId', user.id);
                     localStorage.setItem('token', response.data.token);
-                    console.log(user.id);
                     if (user.role === 'service provider') {
                         this.$router.push('/service-provider/search-jobs');
                     } else if (user.role === 'client' && user.type === 'individual') {
@@ -164,7 +161,6 @@ export default {
                         message: 'Failed to reactivate account: ' + error.message,
                         icon: 'error'
                     });
-                    console.log('Account reactivation failed: ', error);
                 });
         },
         cancelReactivation() {

@@ -90,7 +90,6 @@ export default {
         viewDetails(jobId) {
             let user = JSON.parse(sessionStorage.getItem('user'));
             if (user && user.type) {
-                console.log('View details for job:', jobId);
                 this.$router.push(`/client/${user.type}/posted-jobs/${jobId}/details`);
             } else {
                 console.error('User type is undefined or user not found');
@@ -99,21 +98,17 @@ export default {
         viewCandidates(jobId) {
             let user = JSON.parse(sessionStorage.getItem('user'));
             if (user && user.type) {
-                console.log('View candidates for job:', jobId);
                 this.$router.push(`/client/${user.type}/posted-jobs/${jobId}/candidates`);
             } else {
                 console.error('User type is undefined or user not found');
             }
-            console.log('View candidates for job:', jobId);
         },
         async fetchJobs() {
             this.loading = true;
             await this.$api
                 .get('/client/jobs/created')
                 .then((response) => {
-                    console.log(this.postedJobs);
                     this.postedJobs = response.data.jobs;
-                    console.log('Jobs fetched successfully:', response.data.jobs);
                 })
                 .catch((error) => {
                     console.error('Error fetching jobs:', error);

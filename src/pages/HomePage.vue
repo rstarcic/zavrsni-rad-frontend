@@ -223,7 +223,6 @@ export default {
                 .then((response) => {
                     this.loading = false;
                     this.jobs = response.data.jobs;
-                    console.log('Jobs ', this.jobs);
                 })
                 .catch((error) => {
                     console.error('There was an error fetching user data!', error);

@@ -193,14 +193,12 @@ export default {
                     confirmedPassword: this.confirmedPassword
                 })
                 .then((response) => {
-                    console.log('Server response:', response.data);
                     Notify.create({
                         color: 'positive',
                         position: 'bottom',
                         message: 'Password successfully changed.',
                         icon: 'check_circle'
                     });
-                    console.log('Password changed');
                 })
                 .catch((error) => {
                     Notify.create({
@@ -209,7 +207,6 @@ export default {
                         message: 'Failed to change password: ' + error.message,
                         icon: 'error'
                     });
-                    console.log('Password change failed: ', error);
                 });
         },
         showDeactivationDialog() {
@@ -222,7 +219,6 @@ export default {
             await this.$api
                 .patch('/service-provider/account/deactivate')
                 .then((response) => {
-                    console.log('Server response:', response.data);
                     Notify.create({
                         color: 'positive',
                         position: 'bottom',
@@ -240,10 +236,8 @@ export default {
                         message: 'Failed to deactivate account: ' + error.message,
                         icon: 'error'
                     });
-                    console.log('Account deactivation failed: ', error);
                 })
                 .finally(() => {
-                    console.log('Account deactivated');
                     this.isDeactivationDialogVisible = false;
                 });
         },
@@ -251,7 +245,6 @@ export default {
             await this.$api
                 .delete('/service-provider/account')
                 .then((response) => {
-                    console.log('Server response:', response.data);
                     Notify.create({
                         color: 'positive',
                         position: 'bottom',
@@ -269,10 +262,8 @@ export default {
                         message: 'Failed to delete account: ' + error.message,
                         icon: 'error'
                     });
-                    console.log('Account deletion failed: ', error);
                 })
                 .finally(() => {
-                    console.log('Account deleted');
                     this.isDeletionDialogVisible = false;
                 });
         }

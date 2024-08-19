@@ -164,7 +164,6 @@ const buttonConfig = computed(() => {
 
 const save = async () => {
     const dataURL = signature.value.save();
-    console.log('props.client', props.client.id);
     try {
         const response = await $api.post(
             `/service-provider/jobs/${props.job.id}/client/${props.client.id}/generate`,
