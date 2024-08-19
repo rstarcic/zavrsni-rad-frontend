@@ -163,7 +163,6 @@ const buttonConfig = computed(() => {
 });
 
 const save = async () => {
-    debugger;
     const dataURL = signature.value.save();
     console.log('props.client', props.client.id);
     try {
@@ -176,8 +175,6 @@ const save = async () => {
                 responseType: 'blob'
             }
         );
-        console.log(response);
-        debugger;
         const downloadUrl = window.URL.createObjectURL(response.data);
         const a = document.createElement('a');
         a.href = downloadUrl;

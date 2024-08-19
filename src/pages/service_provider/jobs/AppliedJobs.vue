@@ -32,7 +32,6 @@ export default {
     },
     methods: {
         async handleContractSigned({ job }) {
-            debugger;
             try {
                 await this.createProductPriceAndCustomer(job);
                 this.fetchJobAndApplicationData();
@@ -41,7 +40,6 @@ export default {
             }
         },
         async fetchJobAndApplicationData() {
-            debugger;
             this.loading = true;
             await this.$api
                 .get('/service-provider/applications/applied')
@@ -64,7 +62,6 @@ export default {
         },
         async createProductPriceAndCustomer(job) {
             try {
-                debugger;
                 const response = await this.$api.post(`/service-provider/jobs/${job.id}/create-stripe-product`);
                 if (response.data.success) {
                     Notify.create({

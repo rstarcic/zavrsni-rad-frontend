@@ -11,6 +11,8 @@
 const ESLintPlugin = require('eslint-webpack-plugin');
 
 const { configure } = require('quasar/wrappers');
+const dotenv = require('dotenv');
+dotenv.config();
 
 module.exports = configure(function (ctx) {
     return {

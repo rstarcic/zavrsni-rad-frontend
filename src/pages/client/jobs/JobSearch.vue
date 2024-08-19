@@ -176,7 +176,6 @@ export default {
         },
         async fetchFilteredJobs() {
             try {
-                debugger;
                 const params = {
                     categories: Array.isArray(this.filters.category) ? this.filters.category : [this.filters.category],
                     locations: Array.isArray(this.filters.location) ? this.filters.location : [this.filters.location],
@@ -184,7 +183,6 @@ export default {
                     minHourlyRate: this.filters.hourlyRate.min,
                     maxHourlyRate: this.filters.hourlyRate.max
                 };
-                debugger;
                 const response = await this.$api.get('/jobs/summary', {
                     params
                 });
@@ -213,7 +211,6 @@ export default {
             console.log('Dropdown locations:', this.availableLocations);
         },
         applyFilter(type, value) {
-            debugger;
             if (Array.isArray(this.filters[type])) {
                 if (!this.filters[type].includes(value)) {
                     this.filters[type].push(value);

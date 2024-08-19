@@ -208,7 +208,6 @@ export default {
             console.log('Dropdown locations:', this.availableLocations);
         },
         applyFilter(type, value) {
-            debugger;
             if (Array.isArray(this.filters[type])) {
                 if (!this.filters[type].includes(value)) {
                     this.filters[type].push(value);

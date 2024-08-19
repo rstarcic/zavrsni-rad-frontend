@@ -32,7 +32,6 @@ export default {
     },
     methods: {
         async handleContractSigned() {
-            debugger;
             try {
                 this.fetchJobAndApplicationData();
             } catch (error) {

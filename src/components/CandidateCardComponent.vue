@@ -167,7 +167,6 @@ export default {
             }
         };
         const save = async () => {
-            debugger;
             const dataURL = signature.value.save();
             try {
                 const jobId = route.params.jobId;
@@ -219,7 +218,6 @@ export default {
         };
 
         const isButtonDisabled = (applicationStatus) => {
-            debugger;
             return (
                 applicationStatus === 'selected' ||
                 applicationStatus === 'rejected' ||
@@ -250,7 +248,6 @@ export default {
         };
 
         const getColorPayBtn = (jobStatus, applicationStatus) => {
-            debugger;
             if (jobStatus === 'completed' && applicationStatus === 'selected') {
                 return 'green-7';
             } else if (jobStatus === 'completed' && applicationStatus === 'completed') {
@@ -281,9 +278,7 @@ export default {
         };
 
         const handlePayClick = async () => {
-            debugger;
             try {
-                debugger;
                 const jobId = route.params.jobId;
                 console.log('job id', jobId);
                 const response = await $api.post(`/client/jobs/${jobId}/pay`);
@@ -306,12 +301,10 @@ export default {
 
         const fetchInvoice = async () => {
             try {
-                debugger;
                 const jobId = route.params.jobId;
                 const response = await $api.get(`/client/jobs/${jobId}/invoice`, {
                     responseType: 'blob'
                 });
-                debugger;
                 if (response.status === 200) {
                     const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
                     const a = document.createElement('a');

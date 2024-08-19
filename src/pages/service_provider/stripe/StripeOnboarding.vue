@@ -53,7 +53,6 @@ export default {
         async handleReturn() {
             try {
                 this.loading = true;
-                debugger;
                 const accountId = this.$route.query.account_id;
                 const response = await this.$api.get(`/service-provider/stripe-status/${accountId}`);
                 this.onboardingComplete = response.data.onboardingComplete;
@@ -84,7 +83,6 @@ export default {
         },
         async retryOnboarding() {
             try {
-                debugger;
                 this.loading = true;
                 const response = await this.$api.post(`/service-provider/stripe-connected-account`);
                 if (response.data && response.data.url) {

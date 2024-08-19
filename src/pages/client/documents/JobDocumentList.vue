@@ -102,7 +102,6 @@ export default {
                 });
         },
         downloadContract(contractId) {
-            debugger;
             this.$api
                 .get(`/client/contracts/${contractId}/download`, {
                     responseType: 'blob'

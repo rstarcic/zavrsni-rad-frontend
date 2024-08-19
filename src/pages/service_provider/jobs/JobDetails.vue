@@ -241,7 +241,6 @@ export default {
                 });
         },
         applyForJob() {
-            debugger;
             const jobId = this.$route.params.id;
             this.$api
                 .post(`/service-provider/jobs/${jobId}/applications`)
@@ -250,6 +249,11 @@ export default {
                     Notify.create({
                         message: response.data.message,
                         type: 'positive',
+                        position: 'bottom'
+                    });
+                    Notify.create({
+                        message: 'You will be redirected to the onboarding process to complete your application.',
+                        type: 'info',
                         position: 'bottom'
                     });
                     this.createStripeAccount();
@@ -276,7 +280,6 @@ export default {
         },
         async checkUserBankDetails() {
             try {
-                debugger;
                 const response = await this.$api.get('/service-provider/jobs/bank-details');
                 this.userHasBankDetails = response.data.hasBankDetails;
                 console.log(response.data.hasBankDetails);
@@ -332,7 +335,6 @@ export default {
             });
         },
         async createStripeAccount() {
-            debugger;
             const jobId = this.$route.params.id;
             try {
                 const response = await this.$api.post(`/service-provider/jobs/${jobId}/stripe-connected-account`);

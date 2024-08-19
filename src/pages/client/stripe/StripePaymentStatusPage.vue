@@ -62,7 +62,6 @@ export default {
         async retryPayment() {
             this.loading = true;
             try {
-                debugger;
                 console.log('this.jobId', this.jobId);
                 const response = await this.$api.post(`/client/jobs/${this.jobId}/pay`);
 
@@ -82,7 +81,6 @@ export default {
             this.loading = true;
             if (this.sessionId) {
                 try {
-                    debugger;
                     const response = await this.$api.post('/client/confirm-payment', {
                         session_id: this.sessionId,
                         jobId: this.jobId

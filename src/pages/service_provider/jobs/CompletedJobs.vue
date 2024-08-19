@@ -31,7 +31,6 @@ export default {
     },
     methods: {
         async fetchJobAndApplicationData() {
-            debugger;
             this.loading = true;
             await this.$api
                 .get('/service-provider/applications/completed')
